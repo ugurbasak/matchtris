@@ -10,10 +10,10 @@ public class MatchStone {
 	
 	public MatchStone() {
 		CellX = 4;
-		CellY = 0;
+		CellY=0;
 		type = new int[3];
 		for(int i=0; i<3; i++)
-			type[i] = Math.abs(Game.random.nextInt())%Game.Level+1; 
+			type[i] = Math.abs(Game.random.nextInt())%Game.Level+1;
 	}
 	
 	public void DrawShape(Graphics g,Image image){
@@ -22,7 +22,6 @@ public class MatchStone {
 				g.setClip(Game.startX+this.CellX*6,Game.startY+this.CellY*6+i*6,6,6);
 				g.drawImage(image,Game.startX+this.CellX*6-(this.type[i]-1)*6,Game.startY+this.CellY*6+i*6,16|4);
 			}
-			//else System.out.println("Dont draw "+(this.CellY+i));
 		}
 	}
 	

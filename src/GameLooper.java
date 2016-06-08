@@ -24,5 +24,4 @@ public class GameLooper implements Runnable{
 			}
 		}
 	}
-
 }

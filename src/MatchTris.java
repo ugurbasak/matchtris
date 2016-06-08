@@ -12,10 +12,9 @@ public class MatchTris extends MIDlet{
 	public Game myGame;
 	public Menu myMenu;
 
-
 	protected void startApp() throws MIDletStateChangeException {
 		myLoader = new Loader(this);
-		myLoader.totalelements=11;
+		myLoader.totalelements=12;
 		Display.getDisplay(this).setCurrent(myLoader);
 		
 		myGame = new Game(this);
@@ -30,15 +29,14 @@ public class MatchTris extends MIDlet{
 		myLoader.currentstep++;
 		myLoader.repaint();
 
-		myGame.balls = LoadImage("/images/balls.png");
 		myGame.back  = LoadImage("/images/back.png");
+		myGame.balls = LoadImage("/images/balls.png");
+		myGame.BigBall = LoadImage("/images/bigballs.png");
 		myGame.border= LoadImage("/images/border.png");
-		myGame.splash= LoadImage("/images/splash.png");
-		myGame.menu= LoadImage("/images/menu.png");
-		myGame.blue_fonts= LoadImage("/images/blue_fonts.png");
-		myGame.black= LoadImage("/images/black.png");
-		myGame.blue= LoadImage("/images/blue.png");
-		myGame.imgPuan= LoadImage("/images/puan.png");
+		myGame.bar= LoadImage("/images/bar.png");
+		myGame.baralt= LoadImage("/images/cbaralt.png");
+		myGame.rakam= LoadImage("/images/rakam.png");		
+		myGame.splash= LoadImage("/images/splash.png");		
 
 		Display.getDisplay(this).setCurrent(myGame);
 	}
@@ -49,7 +47,9 @@ public class MatchTris extends MIDlet{
 
 	protected void destroyApp(boolean b) throws MIDletStateChangeException {
 		System.out.println("DESTROY");
+		System.out.println("here and try to exit b="+b);
 		if(b) myGame.SaveLoad(true);
+		System.out.println("exit");
 		notifyDestroyed();
 	}
 	public Image LoadImage(String str) {
@@ -67,5 +67,4 @@ public class MatchTris extends MIDlet{
 			return null;
 		}
 	}
-
 }
