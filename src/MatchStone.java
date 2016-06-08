@@ -10,10 +10,10 @@ public class MatchStone {
 	
 	public MatchStone() {
 		CellX = 4;
-		CellY = -2;
+		CellY=0;
 		type = new int[3];
 		for(int i=0; i<3; i++)
-			type[i] = Math.abs(Game.random.nextInt())%Game.Level+1; 
+			type[i] = Math.abs(Game.random.nextInt())%Game.Level+1;
 	}
 	
 	public void DrawShape(Graphics g,Image image){
