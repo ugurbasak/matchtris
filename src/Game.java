@@ -1,25 +1,43 @@
 import java.util.Random;
 
+/*
 import javax.microedition.lcdui.Font;
-import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.Image;
-import javax.microedition.midlet.MIDletStateChangeException;
-import javax.microedition.rms.InvalidRecordIDException;
-import javax.microedition.rms.RecordStore;
-import javax.microedition.rms.RecordStoreException;
-import javax.microedition.rms.RecordStoreFullException;
-import javax.microedition.rms.RecordStoreNotFoundException;
-import javax.microedition.rms.RecordStoreNotOpenException;
+#import javax.microedition.lcdui.Graphics;
+#import javax.microedition.lcdui.Image;
+#import javax.microedition.midlet.MIDletStateChangeException;
+#import javax.microedition.rms.InvalidRecordIDException;
+#import javax.microedition.rms.RecordStore;
+#import javax.microedition.rms.RecordStoreException;
+#import javax.microedition.rms.RecordStoreFullException;
+#import javax.microedition.rms.RecordStoreNotFoundException;
+#import javax.microedition.rms.RecordStoreNotOpenException;
 
-import com.nokia.mid.ui.DirectGraphics;
-import com.nokia.mid.ui.DirectUtils;
-import com.nokia.mid.ui.FullCanvas;
+#import com.nokia.mid.ui.DirectGraphics;
+#import com.nokia.mid.ui.DirectUtils;
+#import com.nokia.mid.ui.
+*/
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.applet.Applet;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.Random;
+import java.awt.Image;
 
-public class Game extends FullCanvas{
+public class Game extends Applet implements Runnable {
+//public class Game extends 
 	private Font font;
 	private MatchTris myMidlet;
 	private int GameMode=1;
 	public static Random random;
+
+    public final int KEY_LEFT_ARROW = 1;
+    public final int KEY_RIGHT_ARROW = 2;
+    public final int KEY_DOWN_ARROW = 3;
+	public final int KEY_UP_ARROW = 4;
+    public final int KEY_SOFTKEY1 = 5;
+    public final int KEY_SOFTKEY2 = 6;
 	
 	public Image balls =null;
 	public Image border = null;
@@ -44,7 +62,7 @@ public class Game extends FullCanvas{
 	
 	private boolean notall=true;
 
-	private DirectGraphics dg;
+	//private DirectGraphics dg;
 	int[] transparency = { 0xcc2C3A90,0x332C3A90 };
 	public boolean Key=false;
 	private int action=0;
@@ -70,9 +88,11 @@ public class Game extends FullCanvas{
 	private int[] HighScores;
 	private int Continue = 0;
 	
-	private RecordStore rsMatchTris = null;
-	//private final int NoOfRecords = 11; //toplma record store kay?d?
-	//1 tane contiue 20x10 tanede save game için toplam 11 + 201 = 212tane
+	//private RecordStore rsMatchTris = null;
+	
+
+    //private final int NoOfRecords = 11; //toplma record store kay?d?
+	//1 tane contiue 20x10 tanede save game icin toplam 11 + 201 = 212tane
 	/*RecordStorelar?n final int isimleri olsun sonra degistirirsin istersen*/
 	//private final int NoOfRecords = 212; //toplma record store kay?d?
 	//MatchStone ile 215 oldu + 2 CellX ve CellY
@@ -81,11 +101,10 @@ public class Game extends FullCanvas{
 	private final int LEVEL=1,HIGHSCORES=2,ISCONTINUE=12,LOADTHEM=13;
 	private int transCell=0; //Oyun bitince ekran? transparan yapacak
 	
-	
 	public Game(MatchTris myMidlet){
 		this.myMidlet=myMidlet;
 		random = new Random();
-		font=Font.getFont(Font.FACE_SYSTEM,Font.STYLE_PLAIN,Font.SIZE_SMALL);
+		font=new Font("TimesRoman", Font.PLAIN, 12);
 			
 		//////////initialize
 		TetrisBoard = new int[10][20];
@@ -103,7 +122,9 @@ public class Game extends FullCanvas{
 			}
 		}
 		lastDraw = System.currentTimeMillis();
-		
+	
+/*
+Loading and saving game can be impelemented later	
 		try {
 			//about record store
 			byte[] dummy = "0".getBytes();
@@ -134,20 +155,25 @@ public class Game extends FullCanvas{
 			e.printStackTrace();
 		} catch (RecordStoreException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	protected void paint(Graphics g) {
-		if(dg==null)	dg=DirectUtils.getDirectGraphics(g);
-		g.setFont(font);
+		} */
+	//}
 
+
+		//if(dg==null) {
+        //	dg=DirectUtils.getDirectGraphics(g);
+		//}
+        
+        //g.setFont(font); UBASAK
+}
+
+/* This code looks like old or new keypress code 
 		if(!GAMEOVER){
 			switch(GameMode){
 				case 0:
 				myPaint(g,notall);
 				if(Key){
 					switch(action) {
-						case FullCanvas.KEY_LEFT_ARROW:
+						case KEY_LEFT_ARROW:
 							if((System.currentTimeMillis() - timePressed)>=40){
 								move(-1);
 								notall=false;
@@ -157,7 +183,7 @@ public class Game extends FullCanvas{
 							}
 						break;
 	
-						case FullCanvas.KEY_RIGHT_ARROW:
+						case KEY_RIGHT_ARROW:
 							if((System.currentTimeMillis() - timePressed)>=40){
 								move(1);
 								notall=false;
@@ -167,7 +193,7 @@ public class Game extends FullCanvas{
 							}
 						break;
 
-						case FullCanvas.KEY_DOWN_ARROW:
+						case KEY_DOWN_ARROW:
 							if((System.currentTimeMillis() - timePressed)>=10){
 								move(0);
 								notall=false;
@@ -188,7 +214,7 @@ public class Game extends FullCanvas{
 							for(int j=0; j<20; j++){
 								if(TBTest[i][j]==1){
 									g.setClip(0,0,128,128);
-									g.drawImage(back,i*6+startX,j*6+startY,16|4);
+									g.drawImage(back,i*6+startX,j*6+startY);
 								}				
 							}
 						}
@@ -216,11 +242,11 @@ public class Game extends FullCanvas{
 			switch(GameMode){
 				//SPLASH
 				case 1:
-					g.drawImage(splash,0,0,16|4);
+					g.drawImage(splash,0,0);
 				break;
 				//Main menu
 				case 2:
-					g.drawImage(splash,0,0,16|4);
+					g.drawImage(splash,0,0);
 					if(Continue==1){
 						DrawMenu(g,1,false,0);
 					}
@@ -234,18 +260,18 @@ public class Game extends FullCanvas{
 					int xy[][] ={ {startX,startX+6*10,startX+6*10,startX},
 								  {128-startY-transCell*6,128-startY-transCell*6,128-startY,128-startY} };
 					dg.fillPolygon(xy[0],0,xy[1],0,4,0x88888888);
-					//g.drawString("GAME OVER",0,60,16|4);
+					//g.drawString("GAME OVER",0,60);
 					if(transCell!=20)
 						transCell++;
 					else{
 						g.setColor(0x000000);
-						g.drawString("GAME OVER",0,60,16|4);
+						g.drawString("GAME OVER",0,60);
 					}
 				break;
 			}
 		}
-	}
-	
+	} */
+
 	protected void keyPressed(int keyCode){
 		//System.out.println("Key pressed "+getGameAction(keyCode));
 		action = keyCode;
@@ -256,13 +282,13 @@ public class Game extends FullCanvas{
 			switch(GameMode){
 				case 0:
 					switch(keyCode){
-						case FullCanvas.KEY_UP_ARROW:
+						case KEY_UP_ARROW:
 							matchstone.Rotate();
 							notall=false;
 							repaint();
 							notall=true;
 							break;
-						case FullCanvas.KEY_SOFTKEY2:
+						case KEY_SOFTKEY2:
 							//System.out.println("Oyun durduruldu!");
 							//SaveGame();
 							GameMode=2;
@@ -275,17 +301,17 @@ public class Game extends FullCanvas{
 					break;
 					case 2:
 						switch(keyCode){
-							case FullCanvas.KEY_DOWN_ARROW:
+							case KEY_DOWN_ARROW:
 								menuPosition++;
 								menuPosition=menuPosition%MenuModes[1].length;
 							break;
 								
-							case FullCanvas.KEY_UP_ARROW:
+							case KEY_UP_ARROW:
 								menuPosition--;
 								if(menuPosition<0) menuPosition+=MenuModes[1].length;
 							break;
 								
-							case FullCanvas.KEY_SOFTKEY1:
+							case KEY_SOFTKEY1:
 								if(menuPosition == 0){ 
 									System.out.println("Continue");
 									GAMEOVER=false;
@@ -312,19 +338,20 @@ public class Game extends FullCanvas{
 					case 3:
 					//System.out.println("menuPosition="+menuPosition);
 						switch(keyCode){
-							case FullCanvas.KEY_DOWN_ARROW:
+							case KEY_DOWN_ARROW:
 								menuPosition=(menuPosition+1)%2; 
 							break;
-							case FullCanvas.KEY_UP_ARROW:
+							case KEY_UP_ARROW:
 								menuPosition=(menuPosition+1)%2;
 							break;
-							case FullCanvas.KEY_SOFTKEY1:
-								try {
+							case KEY_SOFTKEY1:
+								/*try {
 									if(menuPosition==0)	myMidlet.destroyApp(true);
 									else				myMidlet.destroyApp(false);
 								} catch (MIDletStateChangeException e) {
 									e.printStackTrace();
-								}
+								}*/
+//UBASAK
 							break;
 							//}
 						}
@@ -341,24 +368,24 @@ public class Game extends FullCanvas{
 				//Main menu
 				case 2:
 					switch(keyCode){
-						case FullCanvas.KEY_DOWN_ARROW:
+						case KEY_DOWN_ARROW:
 							menuPosition++;
 							//menuPosition=menuPosition%MenuModes[0].length;
 							menuPosition=menuPosition%MenuModes[Continue].length;
 						break;
 						
-						case FullCanvas.KEY_UP_ARROW:
+						case KEY_UP_ARROW:
 							menuPosition--;
 							//if(menuPosition<0) menuPosition+=MenuModes[0].length;
 							if(menuPosition<0) menuPosition+=MenuModes[Continue].length;
 						break;
 						
-						case FullCanvas.KEY_LEFT_ARROW:
+						case KEY_LEFT_ARROW:
 							if(MenuModes[0][menuPosition] == 6){
 								Level--;
 								if(Level<=4) Level=8;
 							}
-							try {
+							/*try {
 								rsMatchTris = RecordStore.openRecordStore("MatchTris",true);
 								SetRecord(rsMatchTris,LEVEL,Level);
 							} catch (RecordStoreFullException e) {
@@ -367,16 +394,16 @@ public class Game extends FullCanvas{
 								e.printStackTrace();
 							} catch (RecordStoreException e) {
 								e.printStackTrace();
-							}
+							} */
 						break;
 						
-						case FullCanvas.KEY_RIGHT_ARROW:
+						case KEY_RIGHT_ARROW:
 							if(MenuModes[0][menuPosition] == 6){
 								Level++;
 								//if(Level==9) Level=3;
 								if(Level>=9) Level=5;
 							}
-							try {
+							/*try {
 								rsMatchTris = RecordStore.openRecordStore("MatchTris",true);
 								SetRecord(rsMatchTris,LEVEL,Level);
 							} catch (RecordStoreFullException e) {
@@ -385,16 +412,17 @@ public class Game extends FullCanvas{
 								e.printStackTrace();
 							} catch (RecordStoreException e) {
 								e.printStackTrace();
-							}
+							}*/
 						break;
 						
-						case FullCanvas.KEY_SOFTKEY1:
+						case KEY_SOFTKEY1:
 							if(MenuModes[Continue][menuPosition]==5){//EXIT
-								try {
-									myMidlet.destroyApp(true);
-								} catch (MIDletStateChangeException e1) {
-									e1.printStackTrace();
-								}
+								//try {
+								//	myMidlet.destroyApp(true);
+								//} catch (MIDletStateChangeException e1) {
+								//	e1.printStackTrace();
+								//}
+//UBASAK
 							}
 							else if(MenuModes[Continue][menuPosition]==3){//HELP
 								
@@ -432,9 +460,9 @@ public class Game extends FullCanvas{
 				break;
 				
 				case 0:
-				//g.drawString("GAME OVER",0,60,16|4);
+				//g.drawString("GAME OVER",0,60);
 				//System.out.println("Case 0");
-				if(FullCanvas.KEY_SOFTKEY1 == keyCode){
+				if(KEY_SOFTKEY1 == keyCode){
 					System.out.println("Game Over");
 					GameMode = 2;
 				}
@@ -463,7 +491,7 @@ public class Game extends FullCanvas{
 			if(GameMode == 0){
 				//switch (action) {
 				switch (keyCode) {
-				case FullCanvas.KEY_UP_ARROW:
+				case KEY_UP_ARROW:
 					keyPressed(keyCode);
 				break;
 				default:
@@ -506,34 +534,34 @@ public class Game extends FullCanvas{
 
 	private void drawAll(Graphics g){
 		g.setClip(0,0,128,128);
-		g.setColor(0x808080);
+		g.setColor(Color.gray);
 		g.fillRect(0,0,128,128);
 		for(int i=0; i<10; i++){
 			for(int j=0; j<20; j++){
 				if(TetrisBoard[i][j]!=0){
 						g.setClip(startX+i*6,startY+j*6,6,6);
-						g.drawImage(balls,startX+i*6-(TetrisBoard[i][j]-1)*6,startY+j*6,16|4);
+						g.drawImage(balls,startX+i*6-(TetrisBoard[i][j]-1)*6,startY+j*6, null);
 				}
 				else{
 					g.setClip(0,0,128,128);
-					g.drawImage(back,i*6+startX,j*6+startY,16|4);
+					g.drawImage(back,i*6+startX,j*6+startY, null);
 				}				
 			}
 		}
 		g.setClip(0,0,128,128);
 		for(int i=0; i<32; i++){
-			g.drawImage(border,64,i*4,16|4);
-			g.drawImage(border,0,i*4,16|4);
+			g.drawImage(border,64,i*4, null);
+			g.drawImage(border,0,i*4, null);
 		}
 		for(int i=0; i<16; i++){
-			g.drawImage(border,i*4,124,16|4);
-			g.drawImage(border,i*4,0,16|4);
+			g.drawImage(border,i*4,124, null);
+			g.drawImage(border,i*4,0, null);
 		}
 		/*g.setColor(0x000000);
-		g.drawString("Puan",80,5,16|4);
-		g.drawString(""+puan,80,15,16|4);
+		g.drawString("Puan",80,5);
+		g.drawString(""+puan,80,15);
 		*/
-		g.drawImage(imgPuan,80,5,16|4);
+		g.drawImage(imgPuan,80,5, null);
 		DrawString(g,puan,80,30);
 	}
 	
@@ -590,7 +618,7 @@ public class Game extends FullCanvas{
 ///	x
 ///	x
 ///	x
-/// kontrolü //////////////////
+/// control //////////////////
 		//System.out.println("Checking to up");
 		for(int i=0; i<10; i++){
 			for(int j=19; j>=0; j--){
@@ -624,7 +652,7 @@ public class Game extends FullCanvas{
 ///	
 ///	x x x
 ///	
-/// kontrolü //////////////////
+/// control //////////////////
   		//System.out.println("Checking to right");
 	  	for(int i=0; i<10; i++){
 		  	for(int j=19; j>=0; j--){
@@ -658,7 +686,7 @@ public class Game extends FullCanvas{
 ///	  x
 ///  x	
 ///	x
-/// kontrolü //////////////////
+/// control //////////////////
   		//System.out.println("Checking to right horizontal");
 		for(int i=0; i<10; i++){
 			for(int j=19; j>=0; j--){
@@ -691,7 +719,7 @@ public class Game extends FullCanvas{
 ///	x
 ///  x	
 ///	  x
-/// kontrolü //////////////////
+/// control //////////////////
   		//System.out.println("Checking to left horizontal");
 	    for(int i=0; i<10; i++){
 		  for(int j=19; j>=0; j--){
@@ -875,26 +903,30 @@ public class Game extends FullCanvas{
 			{ {0,128,128,0}, {0,0,128,128} }		
 		};
  
-		dg.fillPolygon(full ? xy[1][0] : xy[0][0],0,full ? xy[1][1] :xy[0][1],0,4,transparency[trans]);
-		//dg.fillPolygon(full ? xy[1][0] :xy[0][0],0,full ? xy[1][1] :xy[0][1],0,4,transparency[MenuMode]);
+		//dg.fillPolygon(full ? xy[1][0] : xy[0][0],0,full ? xy[1][1] :xy[0][1],0,4,transparency[trans]);
+		
+        //dg.fillPolygon(full ? xy[1][0] :xy[0][0],0,full ? xy[1][1] :xy[0][1],0,4,transparency[MenuMode]);
 		//dg.fillPolygon(xy[MenuMode][0],0,xy[MenuMode][1],0,4,transparency[MenuMode]);
 
 		for(int i=0; i<MenuModes[MenuMode].length; i++){
-			if(i==menuPosition) g.setColor(0xff0000);
-			else g.setColor(0xffffff);
+			if(i==menuPosition) g.setColor(Color.red);
+			else g.setColor(Color.white);
 			if(MenuModes[MenuMode][i] == 6){
-				int x = font.stringWidth(strMenu[MenuModes[MenuMode][i]]+" "+(Level-4));	
-				g.drawString(strMenu[MenuModes[MenuMode][i]]+" "+(Level-4),(128-x)/2,40+i*15,16|4);
+				//int x = font.stringWidth(strMenu[MenuModes[MenuMode][i]]+" "+(Level-4));	
+				int x = 10; //UBASAK
+                g.drawString(strMenu[MenuModes[MenuMode][i]]+" "+(Level-4),(128-x)/2,40+i*15);
 					
 			}
 			else{
-				int x = font.stringWidth(strMenu[MenuModes[MenuMode][i]]);	
-				g.drawString(strMenu[MenuModes[MenuMode][i]],(128-x)/2,40+i*15,16|4);
+				int x = 10; //UBASAK
+				//int x = font.stringWidth(strMenu[MenuModes[MenuMode][i]]);	
+				g.drawString(strMenu[MenuModes[MenuMode][i]],(128-x)/2,40+i*15);
 			}
 
 			if(MenuMode==2){
-				g.setColor(0xffffff);
-				g.drawString("Do you want to",20,10,16|4);				g.drawString("save your game?",20,20,16|4);	
+				g.setColor(Color.white);
+				g.drawString("Do you want to",20,10);
+                g.drawString("save your game?",20,20);	
 			}
 		}
 	}
@@ -915,7 +947,8 @@ public class Game extends FullCanvas{
 		matchstone.CellY=0;
 		transCell=0;
 	}
-	
+
+    /*	
 	private int GetIntRecord(RecordStore rs, int no){
 		int x=0;
 		try {
@@ -945,7 +978,7 @@ public class Game extends FullCanvas{
 		} catch (RecordStoreException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	private void Score(){
 		synchronized(TetrisBoard){
@@ -959,6 +992,7 @@ public class Game extends FullCanvas{
 				else if(puan>HighScores[j]) break;
 			}
 			System.out.println("my j ="+j);
+            /*
 			if(j!=10){
 				for(int n=9; n>=j; n--){
 					if(n!=j)	HighScores[n] = HighScores[n-1];
@@ -979,7 +1013,7 @@ public class Game extends FullCanvas{
 				} catch (RecordStoreException e) {
 					e.printStackTrace();
 				}
-			}
+			} */
 			System.out.println("GameMode ="+GameMode+" GAMEOVER ="+GAMEOVER);
 		}
 	}
@@ -995,7 +1029,7 @@ public class Game extends FullCanvas{
 			distance[i+1] = distance[i] + WidthOfFonts[ints[i]+1]-WidthOfFonts[ints[i]];
 		for(int i=0; i<no.length(); i++){
 			g.setClip(x+distance[i]+i,y,distance[i+1]-distance[i],20);
-			g.drawImage(blue,x+distance[i]+i-WidthOfFonts[ints[i]],y,16|4);
+			g.drawImage(blue,x+distance[i]+i-WidthOfFonts[ints[i]],y, null);
 		}
 		g.setClip(0,0,128,128);
 	}
@@ -1003,7 +1037,8 @@ public class Game extends FullCanvas{
 	public void SaveLoad(boolean Save){
 		if(!Save) matchstone = new MatchStone();
 		long timex = System.currentTimeMillis();
-		try {
+		/*
+        try {
 			rsMatchTris = RecordStore.openRecordStore("MatchTris",true);
 			for(int i=0; i<200; i++){
 				if(Save)
@@ -1036,8 +1071,26 @@ public class Game extends FullCanvas{
 			e.printStackTrace();
 		} catch (RecordStoreException e) {
 			e.printStackTrace();
-		}
+		} */
 		timex = System.currentTimeMillis() - timex;
 		System.out.println("timepassed in ms "+timex+" in sec "+(timex/1000));
 	}
+
+
+
+
+ private Thread myThread;
+    public boolean isRunnning = false;
+        public void paint(Graphics g) {
+
+        }
+
+        public void init() {
+
+        }
+
+         public void run() {
+
+        }
+
 }

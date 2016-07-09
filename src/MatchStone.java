@@ -1,5 +1,6 @@
-import javax.microedition.lcdui.Graphics;
-import javax.microedition.lcdui.Image;
+import java.applet.*; 
+import java.awt.*; 
+
 
 public class MatchStone {
 
@@ -20,7 +21,7 @@ public class MatchStone {
 		for(int i=0; i<3; i++){
 			if(this.CellY+i>=0){
 				g.setClip(Game.startX+this.CellX*6,Game.startY+this.CellY*6+i*6,6,6);
-				g.drawImage(image,Game.startX+this.CellX*6-(this.type[i]-1)*6,Game.startY+this.CellY*6+i*6,16|4);
+				g.drawImage(image,Game.startX+this.CellX*6-(this.type[i]-1)*6,Game.startY+this.CellY*6+i*6, null);
 			}
 			//else System.out.println("Dont draw "+(this.CellY+i));
 		}

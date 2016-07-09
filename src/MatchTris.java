@@ -1,11 +1,26 @@
-import javax.microedition.lcdui.Alert;
-import javax.microedition.lcdui.AlertType;
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Image;
-import javax.microedition.midlet.MIDlet;
-import javax.microedition.midlet.MIDletStateChangeException;
+//import javax.microedition.lcdui.Alert;
+//import javax.microedition.lcdui.AlertType;
+//import javax.microedition.lcdui.Display;
+//import javax.microedition.lcdui.Image;
+//import javax.microedition.midlet.MIDlet;
+//import javax.microedition.midlet.MIDletStateChangeException;
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.applet.Applet;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.Random;
+import java.awt.Image;
+import java.io.FileReader;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 
-public class MatchTris extends MIDlet{
+public class MatchTris extends Applet{
 		
 	private Loader myLoader;
 	private GameLooper myGame_looper;
@@ -13,16 +28,17 @@ public class MatchTris extends MIDlet{
 	public Menu myMenu;
 
 
-	protected void startApp() throws MIDletStateChangeException {
+	protected void startApp() { // throws MIDletStateChangeException {
 		myLoader = new Loader(this);
 		myLoader.totalelements=11;
-		Display.getDisplay(this).setCurrent(myLoader);
-		
+		//Display.getDisplay(this).setCurrent(myLoader);
+		//UBASAK
+
 		myGame = new Game(this);
 		myLoader.currentstep++;
 		myLoader.repaint();
 		
-		myMenu = new Menu(this);
+		myMenu = new Menu(/*this*/);
 		myLoader.currentstep++;
 		myLoader.repaint();
 
@@ -40,30 +56,38 @@ public class MatchTris extends MIDlet{
 		myGame.blue= LoadImage("/images/blue.png");
 		myGame.imgPuan= LoadImage("/images/puan.png");
 
-		Display.getDisplay(this).setCurrent(myGame);
+		//Display.getDisplay(this).setCurrent(myGame);
 	}
 
 	protected void pauseApp() {
 		System.out.println("PAUSE");
 	}
 
-	protected void destroyApp(boolean b) throws MIDletStateChangeException {
+	protected void destroyApp(boolean b) { // throws MIDletStateChangeException {
 		System.out.println("DESTROY");
 		if(b) myGame.SaveLoad(true);
-		notifyDestroyed();
+		//notifyDestroyed(); UBASAK
 	}
-	public Image LoadImage(String str) {
+	public BufferedImage LoadImage(String str) {
 		try {
 			myLoader.currentstep++;
 			myLoader.repaint();
-			return Image.createImage(str);
+
+            BufferedImage img = null;
+            try {
+                img = ImageIO.read(new File("strawberry.jpg"));
+            } catch (IOException e) {
+            }
+
+			return img; //UBASAK find a way to return a real image
+            //return Image.createImage(str);
 		} catch (Exception err) {
-			Alert myAlert=new Alert("NO!",str,null,AlertType.INFO);
-			Display.getDisplay(this).setCurrent(myAlert);
+			//Alert myAlert=new Alert("NO!",str,null,AlertType.INFO);
+			//Display.getDisplay(this).setCurrent(myAlert);
 			return null;
 		} catch (OutOfMemoryError e) {
-			Alert myAlert=new Alert("NO!",str,null,AlertType.INFO);
-			Display.getDisplay(this).setCurrent(myAlert);
+			//Alert myAlert=new Alert("NO!",str,null,AlertType.INFO);
+			//Display.getDisplay(this).setCurrent(myAlert);
 			return null;
 		}
 	}
