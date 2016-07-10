@@ -1,9 +1,3 @@
-//import javax.microedition.lcdui.Alert;
-//import javax.microedition.lcdui.AlertType;
-//import javax.microedition.lcdui.Display;
-//import javax.microedition.lcdui.Image;
-//import javax.microedition.midlet.MIDlet;
-//import javax.microedition.midlet.MIDletStateChangeException;
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -19,77 +13,74 @@ import java.io.File;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import javax.swing.JApplet;
+import javax.swing.JFrame;
+import java.awt.*; 
+import java.awt.event.*;
+import java.awt.geom.Line2D;
+import javax.swing.JApplet;
+import javax.swing.JFrame;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
 
-public class MatchTris extends Applet{
-		
-	private Loader myLoader;
-	private GameLooper myGame_looper;
-	public Game myGame;
-	public Menu myMenu;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 
+public class MatchTris extends JFrame {
 
-	protected void startApp() { // throws MIDletStateChangeException {
-		myLoader = new Loader(this);
-		myLoader.totalelements=11;
-		//Display.getDisplay(this).setCurrent(myLoader);
-		//UBASAK
+	public MatchTris() {
+        initUI();
+    }
 
-		myGame = new Game(this);
-		myLoader.currentstep++;
-		myLoader.repaint();
-		
-		myMenu = new Menu(/*this*/);
-		myLoader.currentstep++;
-		myLoader.repaint();
+    private void initUI() {
+        Game game = new Game();
+        loading(game); 
+        add(game);
+        
+        setResizable(false);
+        pack();
+        
+        setTitle("MatchTris");
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+    }
 
-		myGame_looper = new GameLooper(this,myGame);
-		myLoader.currentstep++;
-		myLoader.repaint();
-
-		myGame.balls = LoadImage("/images/balls.png");
-		myGame.back  = LoadImage("/images/back.png");
-		myGame.border= LoadImage("/images/border.png");
-		myGame.splash= LoadImage("/images/splash.png");
-		myGame.menu= LoadImage("/images/menu.png");
-		myGame.blue_fonts= LoadImage("/images/blue_fonts.png");
-		myGame.black= LoadImage("/images/black.png");
-		myGame.blue= LoadImage("/images/blue.png");
-		myGame.imgPuan= LoadImage("/images/puan.png");
-
-		//Display.getDisplay(this).setCurrent(myGame);
-	}
-
-	protected void pauseApp() {
-		System.out.println("PAUSE");
-	}
-
-	protected void destroyApp(boolean b) { // throws MIDletStateChangeException {
-		System.out.println("DESTROY");
-		if(b) myGame.SaveLoad(true);
-		//notifyDestroyed(); UBASAK
-	}
-	public BufferedImage LoadImage(String str) {
-		try {
-			myLoader.currentstep++;
-			myLoader.repaint();
-
-            BufferedImage img = null;
-            try {
-                img = ImageIO.read(new File("strawberry.jpg"));
-            } catch (IOException e) {
+    public static void main(String[] args) {
+        
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                MatchTris ex = new MatchTris();
+                ex.setVisible(true);
             }
-
-			return img; //UBASAK find a way to return a real image
-            //return Image.createImage(str);
-		} catch (Exception err) {
-			//Alert myAlert=new Alert("NO!",str,null,AlertType.INFO);
-			//Display.getDisplay(this).setCurrent(myAlert);
-			return null;
-		} catch (OutOfMemoryError e) {
-			//Alert myAlert=new Alert("NO!",str,null,AlertType.INFO);
-			//Display.getDisplay(this).setCurrent(myAlert);
-			return null;
-		}
+        });
+    }
+	
+	public void loading(Game myGame) {
+	    System.out.println("Initialization started");
+		myGame.balls = LoadImage("images/balls.png");
+		myGame.back  = LoadImage("images/back.png");
+		myGame.border= LoadImage("images/border.png");
+		myGame.splash= LoadImage("images/splash.png");
+		myGame.menu= LoadImage("images/menu.png");
+		myGame.blue_fonts= LoadImage("images/blue_fonts.png");
+		myGame.black= LoadImage("images/black.png");
+		myGame.blue= LoadImage("images/blue.png");
+		myGame.imgPuan= LoadImage("images/puan.png");
 	}
 
+	public BufferedImage LoadImage(String str) {
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File(str));
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
+        System.out.println("Load Image for " + str);
+        return img; //UBASAK find a way to return a real image
+	}
 }

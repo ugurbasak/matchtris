@@ -1,7 +1,3 @@
-//import javax.microedition.lcdui.Graphics;
-
-//import com.nokia.mid.ui.FullCanvas;
-import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.Applet;
@@ -17,13 +13,18 @@ public class Loader extends Applet {
 
 	Loader(MatchTris myMidlet){
 		this.myMidlet = myMidlet;
-		
 	}
 
     @Override
+    public void start() { // throws MIDletStateChangeException {
+        System.out.println("Loader::Initialization started");
+    }
+
+    @Override
 	public void paint(Graphics g) {
-		g.setColor(Color.black);
-		g.fillRect(0,0,176,208);
+		System.out.println("Loader::paint");
+        g.setColor(Color.black);
+		g.fillRect(0,0,1000,1000);
 		g.setColor(Color.orange);
 		g.drawString("Yukleniyor...",88,104);
 		g.setColor(Color.red);

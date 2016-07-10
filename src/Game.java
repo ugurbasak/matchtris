@@ -1,21 +1,5 @@
 import java.util.Random;
 
-/*
-import javax.microedition.lcdui.Font;
-#import javax.microedition.lcdui.Graphics;
-#import javax.microedition.lcdui.Image;
-#import javax.microedition.midlet.MIDletStateChangeException;
-#import javax.microedition.rms.InvalidRecordIDException;
-#import javax.microedition.rms.RecordStore;
-#import javax.microedition.rms.RecordStoreException;
-#import javax.microedition.rms.RecordStoreFullException;
-#import javax.microedition.rms.RecordStoreNotFoundException;
-#import javax.microedition.rms.RecordStoreNotOpenException;
-
-#import com.nokia.mid.ui.DirectGraphics;
-#import com.nokia.mid.ui.DirectUtils;
-#import com.nokia.mid.ui.
-*/
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -24,20 +8,129 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;
 import java.awt.Image;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+public class Game extends JPanel implements Runnable {
+//public class Game extends
 
-public class Game extends Applet implements Runnable {
-//public class Game extends 
-	private Font font;
-	private MatchTris myMidlet;
+    private final int B_WIDTH = 350;
+    private final int B_HEIGHT = 350;
+    private final int DELAY = 25;
+    private Thread animator;
+ 
+    public void initGame() {
+        System.out.println("Game::InitGame");
+      add(new JButton("Foo")); // something to draw off focus
+
+        //addKeyListener(new TAdapter());
+              setKeyBindings();
+
+        setBackground(Color.BLACK);
+        setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
+        setDoubleBuffered(true);
+    }
+private void setKeyBindings() {
+      ActionMap actionMap = getActionMap();
+      int condition = JComponent.WHEN_IN_FOCUSED_WINDOW;
+      InputMap inputMap = getInputMap(condition );
+
+      String vkLeft = "VK_LEFT";
+      String vkRight = "VK_RIGHT";
+      inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), vkLeft);
+      inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), vkRight);
+      inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "VK_UP");
+      inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "VK_DOWN");
+      inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "VK_ENTER");
+      inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "VK_SPACE");
+
+      actionMap.put(vkLeft, new KeyAction(vkLeft));
+      actionMap.put(vkRight, new KeyAction(vkRight));
+      actionMap.put("VK_UP", new KeyAction("VK_UP"));
+      actionMap.put("VK_DOWN", new KeyAction("VK_DOWN"));
+      actionMap.put("VK_ENTER", new KeyAction("VK_ENTER"));
+      actionMap.put("VK_SPACE", new KeyAction("VK_SPACE"));
+
+   }
+
+
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+
+        animator = new Thread(this);
+        animator.start();
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        myPaint(g, true);
+    }
+
+    private void cycle() {
+        //Any updates
+    }
+
+    @Override
+    public void run() {
+
+        long beforeTime, timeDiff, sleep;
+
+        beforeTime = System.currentTimeMillis();
+
+        while (true) {
+
+            cycle();
+            repaint();
+
+            timeDiff = System.currentTimeMillis() - beforeTime;
+            sleep = DELAY - timeDiff;
+
+            if (sleep < 0) {
+                sleep = 2;
+            }
+
+            try {
+                Thread.sleep(sleep);
+            } catch (InterruptedException e) {
+                System.out.println("Interrupted: " + e.getMessage());
+            }
+
+            beforeTime = System.currentTimeMillis();
+        }
+    }
+
+
+    private Font font;
+	//private MatchTris myMidlet;
 	private int GameMode=1;
 	public static Random random;
 
-    public final int KEY_LEFT_ARROW = 1;
-    public final int KEY_RIGHT_ARROW = 2;
-    public final int KEY_DOWN_ARROW = 3;
-	public final int KEY_UP_ARROW = 4;
-    public final int KEY_SOFTKEY1 = 5;
-    public final int KEY_SOFTKEY2 = 6;
+    public final String KEY_LEFT_ARROW = "VK_LEFT";
+    public final String KEY_RIGHT_ARROW = "VK_RIGHT";
+    public final String KEY_DOWN_ARROW = "VK_DOWN";
+	public final String KEY_UP_ARROW = "VK_UP";
+    public final String KEY_SOFTKEY1 = "VK_ENTER";
+    public final String KEY_SOFTKEY2 = "VK_SPACE";
 	
 	public Image balls =null;
 	public Image border = null;
@@ -65,7 +158,7 @@ public class Game extends Applet implements Runnable {
 	//private DirectGraphics dg;
 	int[] transparency = { 0xcc2C3A90,0x332C3A90 };
 	public boolean Key=false;
-	private int action=0;
+	private String action="VK_LEFT";
 	private int KeyMove=0;
 	private boolean falling=false;
 	private int falling_times = 0;
@@ -101,9 +194,9 @@ public class Game extends Applet implements Runnable {
 	private final int LEVEL=1,HIGHSCORES=2,ISCONTINUE=12,LOADTHEM=13;
 	private int transCell=0; //Oyun bitince ekran? transparan yapacak
 	
-	public Game(MatchTris myMidlet){
-		this.myMidlet=myMidlet;
-		random = new Random();
+	public Game(){
+		initGame();
+        random = new Random();
 		font=new Font("TimesRoman", Font.PLAIN, 12);
 			
 		//////////initialize
@@ -173,59 +266,10 @@ Loading and saving game can be impelemented later
 				myPaint(g,notall);
 				if(Key){
 					switch(action) {
-						case KEY_LEFT_ARROW:
-							if((System.currentTimeMillis() - timePressed)>=40){
-								move(-1);
-								notall=false;
-								repaint();
-								notall=true;
-								timePressed = System.currentTimeMillis();
-							}
-						break;
-	
-						case KEY_RIGHT_ARROW:
-							if((System.currentTimeMillis() - timePressed)>=40){
-								move(1);
-								notall=false;
-								repaint();
-								notall=true;
-								timePressed = System.currentTimeMillis();
-							}
-						break;
-
-						case KEY_DOWN_ARROW:
-							if((System.currentTimeMillis() - timePressed)>=10){
-								move(0);
-								notall=false;
-								repaint();
-								notall=true;
-								timePressed = System.currentTimeMillis();
-							}
-						break;
 					}
 				}
 				break;
 
-				//Game is going on but flashing cause of Letting it down!
-				case 1:
-					drawAll(g);
-					if(flashing%2==0){
-						for(int i=0; i<10; i++){
-							for(int j=0; j<20; j++){
-								if(TBTest[i][j]==1){
-									g.setClip(0,0,128,128);
-									g.drawImage(back,i*6+startX,j*6+startY);
-								}				
-							}
-						}
-					}
-					if(++flashing == 10){
-						GameMode = 0;
-						LetItDown();
-						falling=false;
-						CheckIsFull();
-					}
-				break;
 				
 				case 2:
 					DrawMenu(g,1,true,0);
@@ -272,8 +316,19 @@ Loading and saving game can be impelemented later
 		}
 	} */
 
-	protected void keyPressed(int keyCode){
-		//System.out.println("Key pressed "+getGameAction(keyCode));
+private class KeyAction extends AbstractAction {
+      public KeyAction(String actionCommand) {
+         putValue(ACTION_COMMAND_KEY, actionCommand);
+      }
+
+      @Override
+      public void actionPerformed(ActionEvent actionEvt) {
+
+    String keyCode = actionEvt.getActionCommand();
+         System.out.println(GameMode + " - " + GAMEOVER + " - " +  keyCode + " pressed");
+
+            
+		
 		action = keyCode;
 		//System.out.println(action);
 		if(!GAMEOVER){
@@ -282,6 +337,35 @@ Loading and saving game can be impelemented later
 			switch(GameMode){
 				case 0:
 					switch(keyCode){
+						case KEY_LEFT_ARROW:
+							if((System.currentTimeMillis() - timePressed)>=40){
+								move(-1);
+								notall=false;
+								repaint();
+								notall=true;
+								timePressed = System.currentTimeMillis();
+							}
+						break;
+	
+						case KEY_RIGHT_ARROW:
+							if((System.currentTimeMillis() - timePressed)>=40){
+								move(1);
+								notall=false;
+								repaint();
+								notall=true;
+								timePressed = System.currentTimeMillis();
+							}
+						break;
+
+						case KEY_DOWN_ARROW:
+							if((System.currentTimeMillis() - timePressed)>=10){
+								move(0);
+								notall=false;
+								repaint();
+								notall=true;
+								timePressed = System.currentTimeMillis();
+							}
+						break;
 						case KEY_UP_ARROW:
 							matchstone.Rotate();
 							notall=false;
@@ -299,6 +383,28 @@ Loading and saving game can be impelemented later
 							break;
 					}
 					break;
+				//Game is going on but flashing cause of Letting it down!
+				case 1:
+					//Need to implement this againg UBASAK
+                    /*
+                    drawAll(g);
+					if(flashing%2==0){
+						for(int i=0; i<10; i++){
+							for(int j=0; j<20; j++){
+								if(TBTest[i][j]==1){
+									g.setClip(0,0,128,128);
+									g.drawImage(back,i*6+startX,j*6+startY);
+								}				
+							}
+						}
+					} */
+					if(++flashing == 10){
+						GameMode = 0;
+						LetItDown();
+						falling=false;
+						CheckIsFull();
+					}
+				break;
 					case 2:
 						switch(keyCode){
 							case KEY_DOWN_ARROW:
@@ -470,7 +576,8 @@ Loading and saving game can be impelemented later
 			}
 		}
 	}
-	
+/*
+        @Override
 	protected void keyReleased(int keyCode) {
 		//System.out.println("Key "+Key);
 		//System.out.println("Key released "+getGameAction(keyCode));
@@ -478,6 +585,8 @@ Loading and saving game can be impelemented later
 		Key = false;
 		KeyMove = 0;
 	}
+
+            @Override
 	protected void keyRepeated(int keyCode) {
 		//int action = getGameAction(keyCode);
 		action = keyCode;
@@ -499,8 +608,8 @@ Loading and saving game can be impelemented later
 				}
 			}
 		}
-	}
-
+	} */
+} //TAdapter
 
 	private void myPaint(Graphics g,boolean all){
 		if(all)			paintBoard(g);
@@ -1080,17 +1189,4 @@ Loading and saving game can be impelemented later
 
 
  private Thread myThread;
-    public boolean isRunnning = false;
-        public void paint(Graphics g) {
-
-        }
-
-        public void init() {
-
-        }
-
-         public void run() {
-
-        }
-
 }
