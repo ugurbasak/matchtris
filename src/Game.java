@@ -278,7 +278,7 @@ public class Game extends JPanel implements Runnable {
         Override
         public void actionPerformed(ActionEvent actionEvt) {
                 String keyCode = actionEvt.getActionCommand();
-                System.out.println(GameMode + " - " + GAMEOVER + " - " + keyCode + " pressed");
+                System.out.println(GameMode + " - " + GAMEOVER + " - " + menuPosition + " - " + keyCode + " pressed");
                 action = keyCode;
                 if (!GAMEOVER) {
                     if (timePressed == 0)
@@ -450,12 +450,6 @@ public class Game extends JPanel implements Runnable {
                                         e.printStackTrace();
                                     } */
 
-                               if(Continue==1){
-                                menu.draw(menuPosition,1,false,0);
-                                }
-                                else{
-                                    menu.draw(menuPosition,0,false,0);
-                                }
                                     break;
 
                                 case KEY_RIGHT_ARROW:
@@ -514,6 +508,12 @@ public class Game extends JPanel implements Runnable {
                                     */
                                     break;
                             }
+                               if(Continue==1){
+                                    menu.draw(menuPosition,1,false,0);
+                                }
+                                else{
+                                    menu.draw(menuPosition,0,false,0);
+                                }
                             break;
 
                         case 0:
@@ -565,8 +565,9 @@ public class Game extends JPanel implements Runnable {
     private void myPaint(Graphics g, boolean all) {
         if (all) paintBoard(g);
         else board.drawAll(g);
-        menu.draw(g);
         drawSplash(g);
+        if(GameMode == 2 || GameMode == 3)
+            menu.draw(g);
     }
 
     private void paintBoard(Graphics g) {

@@ -23,7 +23,6 @@ public class Menu {
 
     public int currentmode = 0;
     public int menuPosition = 0; //Need to move menuPosition from Game.java to here
-    public boolean isEnabled = false;
     public boolean isFull = false;
     public int trans = 0;
     //private List myList;
@@ -94,10 +93,6 @@ public class Menu {
     }
 
     public void draw(Graphics g) {
-        if( !this.isEnabled ) {
-            return;
-        }
-        //g.setFont(font);
         g.setClip(0, 0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT);
 
         int xy[][][] = {
@@ -136,8 +131,6 @@ public class Menu {
                 g.drawString("save your game?", 20, 20);
             }
         }
-
-        this.isEnabled = false;
     }
 
     public void draw(int menuPosition, int mode, boolean full, int trans) {
@@ -145,7 +138,7 @@ public class Menu {
         this.isFull = full;
         this.trans = trans;
         this.menuPosition = menuPosition;
-        this.isEnabled = true;
+        System.out.println(menuPosition);
     }
     
     public int getValue(int mode, int index) {
