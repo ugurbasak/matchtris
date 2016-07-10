@@ -1,6 +1,8 @@
 import java.applet.*;
 import java.awt.*;
-
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public class MatchStone {
 
@@ -17,11 +19,17 @@ public class MatchStone {
             type[i] = Math.abs(Game.random.nextInt()) % Game.Level + 1;
     }
 
-    public void DrawShape(Graphics g, Image image) {
+    private BufferedImage getSprite(BufferedImage image, int index) {
+        //System.out.println("Index is " + index);
+        int image_size = 6;
+        return image.getSubimage((index-1)*image_size,0,image_size, image_size);
+    }
+
+    public void DrawShape(Graphics g, BufferedImage image, int cell_size) {
         for (int i = 0; i < 3; i++) {
             if (this.CellY + i >= 0) {
-                g.setClip(Game.startX + this.CellX * 6, Game.startY + this.CellY * 6 + i * 6, 6, 6);
-                g.drawImage(image, Game.startX + this.CellX * 6 - (this.type[i] - 1) * 6, Game.startY + this.CellY * 6 + i * 6, null);
+                BufferedImage imagex = getSprite(image, this.type[i]);
+                g.drawImage(imagex, Game.startX+this.CellX*cell_size, Game.startY + (this.CellY + i) * cell_size, cell_size, cell_size, null);
             }
             //else System.out.println("Dont draw "+(this.CellY+i));
         }

@@ -28,6 +28,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import java.awt.image.BufferedImage;
+
 public class Game extends JPanel implements Runnable {
     //public class Game extends
 
@@ -35,6 +37,16 @@ public class Game extends JPanel implements Runnable {
     private final int B_HEIGHT = 350;
     private final int DELAY = 25;
     private Thread animator;
+    public final int CELL_SIZE = 16; //These 3 constanst needs to be completely parametric, now it is only available for 6 pixel balls
+    private final int BOARD_WIDTH = CELL_SIZE * 20 + 8;
+    private final int BOARD_HEIGHT = CELL_SIZE * 20 + 8;
+
+    public final String KEY_LEFT_ARROW = "VK_LEFT";
+    public final String KEY_RIGHT_ARROW = "VK_RIGHT";
+    public final String KEY_DOWN_ARROW = "VK_DOWN";
+    public final String KEY_UP_ARROW = "VK_UP";
+    public final String KEY_SOFTKEY1 = "VK_ENTER";
+    public final String KEY_SOFTKEY2 = "VK_SPACE";
 
     public void initGame() {
         System.out.println("Game::InitGame");
@@ -49,6 +61,7 @@ public class Game extends JPanel implements Runnable {
         int condition = JComponent.WHEN_IN_FOCUSED_WINDOW;
         InputMap inputMap = getInputMap(condition);
 
+        //Use the constants KEY_KEFT_ARROW ...
         String vkLeft = "VK_LEFT";
         String vkRight = "VK_RIGHT";
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), vkLeft);
@@ -122,22 +135,16 @@ public class Game extends JPanel implements Runnable {
     private int GameMode = 1;
     public static Random random;
 
-    public final String KEY_LEFT_ARROW = "VK_LEFT";
-    public final String KEY_RIGHT_ARROW = "VK_RIGHT";
-    public final String KEY_DOWN_ARROW = "VK_DOWN";
-    public final String KEY_UP_ARROW = "VK_UP";
-    public final String KEY_SOFTKEY1 = "VK_ENTER";
-    public final String KEY_SOFTKEY2 = "VK_SPACE";
 
-    public Image balls = null;
-    public Image border = null;
-    public Image back = null;
-    public Image splash = null;
-    public Image menu = null;
-    public Image blue_fonts = null;
-    public Image black = null;
-    public Image blue = null;
-    public Image imgPuan = null;
+    public BufferedImage balls = null;
+    public BufferedImage border = null;
+    public BufferedImage back = null;
+    public BufferedImage splash = null;
+    public BufferedImage menu = null;
+    public BufferedImage blue_fonts = null;
+    public BufferedImage black = null;
+    public BufferedImage blue = null;
+    public BufferedImage imgPuan = null;
 
     //0 1 ... 9 rakamlar?n?n geni?likleri
     //private final int[] WidthOfFonts = { 0,9,16,26,35,44,53,62,71,81,90 };
@@ -617,16 +624,13 @@ public class Game extends JPanel implements Runnable {
         else drawAll(g);
     }
 
-    private final int CELL_SIZE = 6;
-    private final int BOARD_WIDTH = CELL_SIZE * 20 + 8;
-    private final int BOARD_HEIGHT = CELL_SIZE * 20 + 8;
     private void paintBoard(Graphics g) {
         drawAll(g);
         g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
         if (!GAMEOVER) {
             CheckGameOver();
 
-            matchstone.DrawShape(g, balls);
+            matchstone.DrawShape(g, balls, CELL_SIZE);
             if (System.currentTimeMillis() - lastDraw >= speed) {
                 if (Check()) {
                     Update();
@@ -642,36 +646,44 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
+    private BufferedImage getSprite(BufferedImage image, int index) {
+        //System.out.println("Index is " + index);
+        int image_size = 6;
+        return image.getSubimage((index-1)*image_size,0,image_size, image_size);
+    }
+
     private void drawAll(Graphics g) {
         g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
         g.setColor(Color.gray);
         g.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 20; j++) {
+                int x_v = startX+i*CELL_SIZE;
+                int y_v = startY + j * CELL_SIZE;
                 if (TetrisBoard[i][j] != 0) {
-                    g.setClip(startX + i * CELL_SIZE, startY + j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    g.drawImage(balls, startX + i * CELL_SIZE - (TetrisBoard[i][j] - 1) * CELL_SIZE, startY + j * CELL_SIZE, null);
+                    BufferedImage image = getSprite(balls, TetrisBoard[i][j]);
+                    g.drawImage(image, x_v, y_v, CELL_SIZE, CELL_SIZE, null);
                 } else {
                     g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-                    g.drawImage(back, i * CELL_SIZE + startX, j * CELL_SIZE + startY, null);
+                    g.drawImage(back, x_v, y_v, CELL_SIZE, CELL_SIZE, null); 
                 }
             }
         }
         g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-        for (int i = 0; i < 32; i++) {
-            g.drawImage(border, 64, i * 4, null);
+        for (int i = 0; i < BOARD_WIDTH / 4; i++) {
+            g.drawImage(border, BOARD_WIDTH / 2, i * 4, null);
             g.drawImage(border, 0, i * 4, null);
         }
-        for (int i = 0; i < 16; i++) {
-            g.drawImage(border, i * 4, 124, null);
+        for (int i = 0; i < BOARD_WIDTH / 8; i++) {
+            g.drawImage(border, i * 4, BOARD_WIDTH - 4 , null);
             g.drawImage(border, i * 4, 0, null);
         }
         /*g.setColor(0x000000);
         g.drawString("Puan",80,5);
         g.drawString(""+puan,80,15);
         */
-        g.drawImage(imgPuan, 80, 5, null);
-        DrawString(g, puan, 80, 30);
+        g.drawImage(imgPuan, (10 + 2) * CELL_SIZE , 5, null);
+        DrawString(g, puan, (10 + 2) * CELL_SIZE, 30);
     }
 
     public void move(int direction) {
@@ -1188,9 +1200,4 @@ public class Game extends JPanel implements Runnable {
         timex = System.currentTimeMillis() - timex;
         System.out.println("timepassed in ms " + timex + " in sec " + (timex / 1000));
     }
-
-
-
-
-    private Thread myThread;
 }
