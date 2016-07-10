@@ -129,9 +129,9 @@ public class Game extends JPanel implements Runnable {
 
     private Font font;
     //private MatchTris myMidlet;
-    public static int GameMode = 1;
+    public static int GameMode = 2;
     private Board board = null;
-
+    private Menu menu = null;
 
     
 
@@ -157,19 +157,6 @@ public class Game extends JPanel implements Runnable {
     public static int Level = 6;
     public static int puan = 0;
 
-    private String[] strMenu = {
-        "New Game", "Continue", "Finish Game",
-        "Help", "About", "Exit", "Level", "YES", "NO"
-    };
-    private int[][] MenuModes = {
-        {
-            0, 6, 3, 4, 5
-        }, {
-            1, 2, 3, 5
-        }, {
-            7, 8
-        }
-    };
     private long timePressed = 0; //about when a key is pressed or released
     public static int flashing = 0;
     private int menuPosition = 0;
@@ -194,6 +181,7 @@ public class Game extends JPanel implements Runnable {
         initGame();
         font = new Font("TimesRoman", Font.PLAIN, 12);
         board = new Board();
+        menu = new Menu();
         //Initialization
         HighScores = new int[10];
         lastDraw = System.currentTimeMillis();
@@ -251,34 +239,17 @@ public class Game extends JPanel implements Runnable {
                         }
                     }
                     break;
-
-                    
-                    case 2:
-                        DrawMenu(g,1,true,0);
-                    break;
-                    
-                    case 3:
-                    //asd
-                        DrawMenu(g,2,true,0);
-                    break;
-
                 }               
             }
             else{
                 switch(GameMode){
                     //SPLASH
                     case 1:
-                        g.drawImage(splash,0,0);
+                        gisSplashEnabled = true;
                     break;
                     //Main menu
                     case 2:
-                        g.drawImage(splash,0,0);
-                        if(Continue==1){
-                            DrawMenu(g,1,false,0);
-                        }
-                        else{
-                            DrawMenu(g,0,false,0);
-                        }
+                        gisSplashEnabled = true;
                     break;
                     
                     case 0:
@@ -382,17 +353,18 @@ public class Game extends JPanel implements Runnable {
                                 falling = false;
                                 board.CheckIsFull();
                             }
+
                             break;
                         case 2:
                             switch (keyCode) {
                                 case KEY_DOWN_ARROW:
                                     menuPosition++;
-                                    menuPosition = menuPosition % MenuModes[1].length;
+                                    menuPosition = menuPosition % menu.getLength(1);
                                     break;
 
                                 case KEY_UP_ARROW:
                                     menuPosition--;
-                                    if (menuPosition < 0) menuPosition += MenuModes[1].length;
+                                    if (menuPosition < 0) menuPosition += menu.getLength(1);
                                     break;
 
                                 case KEY_SOFTKEY1:
@@ -415,6 +387,8 @@ public class Game extends JPanel implements Runnable {
                                         menuPosition = 0;
                                     }
                             }
+                            menu.draw(menuPosition,1,true,0);
+
                             break;
 
                         case 3:
@@ -437,6 +411,7 @@ public class Game extends JPanel implements Runnable {
                                     break;
                                     //}
                             }
+                            menu.draw(menuPosition,2,true,0);
                             break;
                     }
                 } else { //GAMEOVER = true
@@ -451,18 +426,16 @@ public class Game extends JPanel implements Runnable {
                             switch (keyCode) {
                                 case KEY_DOWN_ARROW:
                                     menuPosition++;
-                                    //menuPosition=menuPosition%MenuModes[0].length;
-                                    menuPosition = menuPosition % MenuModes[Continue].length;
+                                    menuPosition = menuPosition % menu.getLength(Continue);
                                     break;
 
                                 case KEY_UP_ARROW:
                                     menuPosition--;
-                                    //if(menuPosition<0) menuPosition+=MenuModes[0].length;
-                                    if (menuPosition < 0) menuPosition += MenuModes[Continue].length;
+                                    if (menuPosition < 0) menuPosition += menu.getLength(Continue);
                                     break;
 
                                 case KEY_LEFT_ARROW:
-                                    if (MenuModes[0][menuPosition] == 6) {
+                                    if (menu.getValue(0, menuPosition) == 6) {
                                         Level--;
                                         if (Level <= 4) Level = 8;
                                     }
@@ -476,10 +449,17 @@ public class Game extends JPanel implements Runnable {
                                     } catch (RecordStoreException e) {
                                         e.printStackTrace();
                                     } */
+
+                               if(Continue==1){
+                                menu.draw(menuPosition,1,false,0);
+                                }
+                                else{
+                                    menu.draw(menuPosition,0,false,0);
+                                }
                                     break;
 
                                 case KEY_RIGHT_ARROW:
-                                    if (MenuModes[0][menuPosition] == 6) {
+                                    if (menu.getValue(0, menuPosition) == 6) {
                                         Level++;
                                         //if(Level==9) Level=3;
                                         if (Level >= 9) Level = 5;
@@ -497,26 +477,27 @@ public class Game extends JPanel implements Runnable {
                                     break;
 
                                 case KEY_SOFTKEY1:
-                                    if (MenuModes[Continue][menuPosition] == 5) { //EXIT
+                                    int menuValue = menu.getValue(Continue, menuPosition);
+                                    if (menuValue == 5) { //EXIT
                                         //try {
                                         //  myMidlet.destroyApp(true);
                                         //} catch (MIDletStateChangeException e1) {
                                         //  e1.printStackTrace();
                                         //}
                                         //UBASAK
-                                    } else if (MenuModes[Continue][menuPosition] == 3) { //HELP
+                                    } else if (menuValue == 3) { //HELP
 
-                                    } else if (MenuModes[Continue][menuPosition] == 0) { //NEW GAME
+                                    } else if (menuValue == 0) { //NEW ONE
                                         System.out.println("Starts");
                                         NewGame();
-                                    } else if (MenuModes[Continue][menuPosition] == 1) { //CONTINUE
+                                    } else if (menuValue == 1) { //CONTINUE
                                         SaveLoad(false);
                                         System.out.println("Loaded");
                                         GAMEOVER = false;
                                         GameMode = 0;
                                         Continue = 0;
-                                    } else if (MenuModes[Continue][menuPosition] == 2) { //FINISH
-                                    } else if (MenuModes[Continue][menuPosition] == 4) { //ABOUT
+                                    } else if (menuValue == 2) { //FINISH
+                                    } else if (menuValue == 4) { //ABOUT
                                     }
                                     /*                          if(menuPosition == 0){ 
                                                                     System.out.println("Starts");
@@ -584,6 +565,8 @@ public class Game extends JPanel implements Runnable {
     private void myPaint(Graphics g, boolean all) {
         if (all) paintBoard(g);
         else board.drawAll(g);
+        menu.draw(g);
+        drawSplash(g);
     }
 
     private void paintBoard(Graphics g) {
@@ -608,50 +591,9 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
-    private void DrawMenu(Graphics g, int MenuMode, boolean full, int trans) {
-        //g.setFont(font);
-        g.setClip(0, 0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT);
-
-        int xy[][][] = {
-            {
-                {
-                    0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT, 0
-                }, {
-                    32, 32, Board.BOARD_WIDTH, Board.BOARD_HEIGHT
-                }
-            }, {
-                {
-                    0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT, 0
-                }, {
-                    0, 0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT
-                }
-            }
-        };
-
-        //dg.fillPolygon(full ? xy[1][0] : xy[0][0],0,full ? xy[1][1] :xy[0][1],0,4,transparency[trans]);
-        //dg.fillPolygon(full ? xy[1][0] :xy[0][0],0,full ? xy[1][1] :xy[0][1],0,4,transparency[MenuMode]);
-        //dg.fillPolygon(xy[MenuMode][0],0,xy[MenuMode][1],0,4,transparency[MenuMode]);
-
-        for (int i = 0; i < MenuModes[MenuMode].length; i++) {
-            if (i == menuPosition) g.setColor(Color.red);
-            else g.setColor(Color.white);
-            if (MenuModes[MenuMode][i] == 6) {
-                //int x = font.stringWidth(strMenu[MenuModes[MenuMode][i]]+" "+(Level-4));  
-                int x = 10; //UBASAK
-                g.drawString(strMenu[MenuModes[MenuMode][i]] + " " + (Level - 4), (128 - x) / 2, 40 + i * 15);
-
-            } else {
-                int x = 10; //UBASAK
-                //int x = font.stringWidth(strMenu[MenuModes[MenuMode][i]]);    
-                g.drawString(strMenu[MenuModes[MenuMode][i]], (128 - x) / 2, 40 + i * 15);
-            }
-
-            if (MenuMode == 2) {
-                g.setColor(Color.white);
-                g.drawString("Do you want to", 20, 10);
-                g.drawString("save your game?", 20, 20);
-            }
-        }
+    private void drawSplash(Graphics g) {
+        if( GameMode != 2 ) return;
+        g.drawImage(Board.splash,0,0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT,null);        
     }
 
     private void NewGame() {
