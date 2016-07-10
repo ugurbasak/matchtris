@@ -333,11 +333,8 @@ public class Game extends JPanel implements Runnable {
                                         GameMode = 2;
                                         //Continue=0;
                                     } else if (menu.menuPosition == 3) {
-                                        /*  try {
-                                                myMidlet.destroyApp(true);
-                                            } catch (MIDletStateChangeException e) {
-                                                e.printStackTrace();
-                                            }*/
+                                        System.exit(0);
+                                        //we are exiting but there are some flows, check this. UBASAK
                                         GameMode = 3;
                                         menu.menuPosition = 0;
                                     }
@@ -347,22 +344,14 @@ public class Game extends JPanel implements Runnable {
                             break;
 
                         case 3:
-                            //System.out.println("menuPosition="+menuPosition);
                             switch (keyCode) {
                                 case Constants.KEY_DOWN_ARROW:
                                 case Constants.KEY_UP_ARROW:
                                     menu.navigate(keyCode);
                                     break;
                                 case Constants.KEY_SOFTKEY1:
-                                    /*try {
-                                        if(menuPosition==0) myMidlet.destroyApp(true);
-                                        else                myMidlet.destroyApp(false);
-                                    } catch (MIDletStateChangeException e) {
-                                        e.printStackTrace();
-                                    }*/
-                                    //UBASAK
+                                    System.exit(0);
                                     break;
-                                    //}
                             }
                             menu.draw(2,true,0);
                             break;
@@ -383,16 +372,10 @@ public class Game extends JPanel implements Runnable {
                                 case Constants.KEY_RIGHT_ARROW:
                                     menu.navigate(keyCode);
                                     break;
-
                                 case Constants.KEY_SOFTKEY1:
                                     int menuValue = menu.getValue(Continue, menu.menuPosition);
                                     if (menuValue == 5) { //EXIT
-                                        //try {
-                                        //  myMidlet.destroyApp(true);
-                                        //} catch (MIDletStateChangeException e1) {
-                                        //  e1.printStackTrace();
-                                        //}
-                                        //UBASAK
+                                        System.exit(0);
                                     } else if (menuValue == 3) { //HELP
 
                                     } else if (menuValue == 0) { //NEW ONE
@@ -441,7 +424,8 @@ public class Game extends JPanel implements Runnable {
                     }
                 }
             }
-            /*
+            /* UBASAK - For J2ME applications I was using keyreleased and keyrepeated events, check if they are necessary.
+
                     @Override
                 protected void keyReleased(int keyCode) {
                     //System.out.println("Key "+Key);
@@ -519,7 +503,9 @@ public class Game extends JPanel implements Runnable {
         lastDraw = System.currentTimeMillis();
         puan = 0;
         matchstone = new MatchStone();
-        if (matchstone.CellY != 0) System.out.println("uyar? CellY 0 degil");
+        if (matchstone.CellY != 0) {
+            System.out.println("WARNING : cell_y is not ZERO");
+        }
         matchstone.CellY = 0;
         transCell = 0;
     }
