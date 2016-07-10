@@ -15,8 +15,9 @@ public class MatchStone {
         CellX = 4;
         CellY = 0;
         type = new int[3];
-        for (int i = 0; i < 3; i++)
-            type[i] = Math.abs(Game.random.nextInt()) % Game.Level + 1;
+        for (int i = 0; i < 3; i++) {
+            type[i] = Math.abs(Utilities.random.nextInt()) % Game.Level + 1;
+        }
     }
 
     private BufferedImage getSprite(BufferedImage image, int index) {
@@ -29,7 +30,7 @@ public class MatchStone {
         for (int i = 0; i < 3; i++) {
             if (this.CellY + i >= 0) {
                 BufferedImage imagex = getSprite(image, this.type[i]);
-                g.drawImage(imagex, Game.startX+this.CellX*cell_size, Game.startY + (this.CellY + i) * cell_size, cell_size, cell_size, null);
+                g.drawImage(imagex, Board.startX+this.CellX*cell_size, Board.startY + (this.CellY + i) * cell_size, cell_size, cell_size, null);
             }
             //else System.out.println("Dont draw "+(this.CellY+i));
         }

@@ -31,15 +31,12 @@ import javax.swing.JPanel;
 import java.awt.image.BufferedImage;
 
 public class Game extends JPanel implements Runnable {
-    //public class Game extends
 
     private final int B_WIDTH = 350;
     private final int B_HEIGHT = 350;
     private final int DELAY = 25;
     private Thread animator;
-    public final int CELL_SIZE = 16; //These 3 constanst needs to be completely parametric, now it is only available for 6 pixel balls
-    private final int BOARD_WIDTH = CELL_SIZE * 20 + 8;
-    private final int BOARD_HEIGHT = CELL_SIZE * 20 + 8;
+
 
     public final String KEY_LEFT_ARROW = "VK_LEFT";
     public final String KEY_RIGHT_ARROW = "VK_RIGHT";
@@ -132,49 +129,33 @@ public class Game extends JPanel implements Runnable {
 
     private Font font;
     //private MatchTris myMidlet;
-    private int GameMode = 1;
-    public static Random random;
+    public static int GameMode = 1;
+    private Board board = null;
 
 
-    public BufferedImage balls = null;
-    public BufferedImage border = null;
-    public BufferedImage back = null;
-    public BufferedImage splash = null;
-    public BufferedImage menu = null;
-    public BufferedImage blue_fonts = null;
-    public BufferedImage black = null;
-    public BufferedImage blue = null;
-    public BufferedImage imgPuan = null;
+    
 
-    //0 1 ... 9 rakamlar?n?n geni?likleri
-    //private final int[] WidthOfFonts = { 0,9,16,26,35,44,53,62,71,81,90 };
-    private final int[] WidthOfFonts = {
-        0, 8, 12, 20, 28, 36, 44, 52, 60, 68, 76
-    };
-
-    public int[][] TetrisBoard;
-    public int[][] TBTest;
     private long lastDraw;
     private final long speed = 250;
-    public static final int startX = 4;
-    public static final int startY = 4;
+
     public MatchStone matchstone = null;
 
     private boolean notall = true;
 
     //private DirectGraphics dg;
     int[] transparency = {
-        0xcc2C3A90, 0x332C3A90
+        0xcc2C3A90, 
+        0x332C3A90
     };
     public boolean Key = false;
     private String action = "VK_LEFT";
     private int KeyMove = 0;
-    private boolean falling = false;
+    public static boolean falling = false;
     private int falling_times = 0;
 
-    boolean GAMEOVER = true;
+    public static boolean GAMEOVER = true;
     public static int Level = 6;
-    private int puan = 0;
+    public static int puan = 0;
 
     private String[] strMenu = {
         "New Game", "Continue", "Finish Game",
@@ -190,7 +171,7 @@ public class Game extends JPanel implements Runnable {
         }
     };
     private long timePressed = 0; //about when a key is pressed or released
-    private int flashing = 0;
+    public static int flashing = 0;
     private int menuPosition = 0;
 
     private int[] HighScores;
@@ -211,24 +192,10 @@ public class Game extends JPanel implements Runnable {
 
     public Game() {
         initGame();
-        random = new Random();
         font = new Font("TimesRoman", Font.PLAIN, 12);
-
-        //////////initialize
-        TetrisBoard = new int[10][20];
-        TBTest = new int[10][20];
+        board = new Board();
+        //Initialization
         HighScores = new int[10];
-
-        //yeni bir tas yaratmak icin
-        //matchstone = new MatchStone();
-        //burda yaratma
-
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 20; j++) {
-                TetrisBoard[i][j] = 0;
-                TBTest[i][j] = 0;
-            }
-        }
         lastDraw = System.currentTimeMillis();
 
         /*
@@ -339,14 +306,9 @@ public class Game extends JPanel implements Runnable {
         @
         Override
         public void actionPerformed(ActionEvent actionEvt) {
-
                 String keyCode = actionEvt.getActionCommand();
                 System.out.println(GameMode + " - " + GAMEOVER + " - " + keyCode + " pressed");
-
-
-
                 action = keyCode;
-                //System.out.println(action);
                 if (!GAMEOVER) {
                     if (timePressed == 0)
                         timePressed = System.currentTimeMillis();
@@ -355,7 +317,7 @@ public class Game extends JPanel implements Runnable {
                             switch (keyCode) {
                                 case KEY_LEFT_ARROW:
                                     if ((System.currentTimeMillis() - timePressed) >= 40) {
-                                        move(-1);
+                                        board.move(-1, matchstone);
                                         notall = false;
                                         repaint();
                                         notall = true;
@@ -365,7 +327,7 @@ public class Game extends JPanel implements Runnable {
 
                                 case KEY_RIGHT_ARROW:
                                     if ((System.currentTimeMillis() - timePressed) >= 40) {
-                                        move(1);
+                                        board.move(1, matchstone);
                                         notall = false;
                                         repaint();
                                         notall = true;
@@ -375,7 +337,7 @@ public class Game extends JPanel implements Runnable {
 
                                 case KEY_DOWN_ARROW:
                                     if ((System.currentTimeMillis() - timePressed) >= 10) {
-                                        move(0);
+                                        board.move(0, matchstone);
                                         notall = false;
                                         repaint();
                                         notall = true;
@@ -416,9 +378,9 @@ public class Game extends JPanel implements Runnable {
                     } */
                             if (++flashing == 10) {
                                 GameMode = 0;
-                                LetItDown();
+                                board.LetItDown();
                                 falling = false;
-                                CheckIsFull();
+                                board.CheckIsFull();
                             }
                             break;
                         case 2:
@@ -439,7 +401,7 @@ public class Game extends JPanel implements Runnable {
                                         GAMEOVER = false;
                                         GameMode = 0;
                                     } else if (menuPosition == 1) {
-                                        Score();
+                                        board.Score();
                                         GAMEOVER = true;
                                         GameMode = 2;
                                         //Continue=0;
@@ -621,23 +583,23 @@ public class Game extends JPanel implements Runnable {
 
     private void myPaint(Graphics g, boolean all) {
         if (all) paintBoard(g);
-        else drawAll(g);
+        else board.drawAll(g);
     }
 
     private void paintBoard(Graphics g) {
-        drawAll(g);
-        g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
+        board.drawAll(g);
+        g.setClip(0, 0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT);
         if (!GAMEOVER) {
-            CheckGameOver();
-
-            matchstone.DrawShape(g, balls, CELL_SIZE);
+            board.CheckGameOver(matchstone);
+            if(matchstone != null)
+                matchstone.DrawShape(g, Board.balls, Board.CELL_SIZE);
             if (System.currentTimeMillis() - lastDraw >= speed) {
-                if (Check()) {
-                    Update();
+                if (board.Check(matchstone)) {
+                    board.Update(matchstone);
                     //matchstone = null;
                     matchstone = new MatchStone();
                     //Key = false;
-                    CheckIsFull();
+                    board.CheckIsFull();
                 } else {
                     matchstone.CellY++;
                 }
@@ -646,392 +608,27 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
-    private BufferedImage getSprite(BufferedImage image, int index) {
-        //System.out.println("Index is " + index);
-        int image_size = 6;
-        return image.getSubimage((index-1)*image_size,0,image_size, image_size);
-    }
-
-    private void drawAll(Graphics g) {
-        g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-        g.setColor(Color.gray);
-        g.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 20; j++) {
-                int x_v = startX+i*CELL_SIZE;
-                int y_v = startY + j * CELL_SIZE;
-                if (TetrisBoard[i][j] != 0) {
-                    BufferedImage image = getSprite(balls, TetrisBoard[i][j]);
-                    g.drawImage(image, x_v, y_v, CELL_SIZE, CELL_SIZE, null);
-                } else {
-                    g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-                    g.drawImage(back, x_v, y_v, CELL_SIZE, CELL_SIZE, null); 
-                }
-            }
-        }
-        g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-        for (int i = 0; i < BOARD_WIDTH / 4; i++) {
-            g.drawImage(border, BOARD_WIDTH / 2, i * 4, null);
-            g.drawImage(border, 0, i * 4, null);
-        }
-        for (int i = 0; i < BOARD_WIDTH / 8; i++) {
-            g.drawImage(border, i * 4, BOARD_WIDTH - 4 , null);
-            g.drawImage(border, i * 4, 0, null);
-        }
-        /*g.setColor(0x000000);
-        g.drawString("Puan",80,5);
-        g.drawString(""+puan,80,15);
-        */
-        g.drawImage(imgPuan, (10 + 2) * CELL_SIZE , 5, null);
-        DrawString(g, puan, (10 + 2) * CELL_SIZE, 30);
-    }
-
-    public void move(int direction) {
-        if (!GAMEOVER && GameMode == 0) {
-            boolean increase = true;
-            if (direction == 1) {
-                for (int i = 0; i < 3; i++) {
-                    if (matchstone.CellX == 9 || TetrisBoard[matchstone.CellX + 1][matchstone.CellY + i] != 0)
-                        increase = false;
-                }
-                if (increase) matchstone.CellX++;
-            } else if (direction == -1) {
-                for (int i = 0; i < 3; i++) {
-                    if (matchstone.CellX == 0 || TetrisBoard[matchstone.CellX - 1][matchstone.CellY + i] != 0)
-                        increase = false;
-                }
-                if (increase) matchstone.CellX--;
-            } else if (direction == 0) {
-                if (Check()) {
-                    //              Update();
-                    //              matchstone = new MatchStone();
-                    //              CheckIsFull();
-                    if (!GAMEOVER) {
-                        CheckGameOver();
-                    }
-                } else {
-                    matchstone.CellY++;
-                }
-            }
-        } else if (GameMode == 0 && GAMEOVER == true)
-            System.out.println("Hata Buradaym?s");
-    }
-    private boolean Check() {
-        //if(matchstone.CellX<0 || matchstone.CellX>9) System.out.println("x de hata "+matchstone.CellX);
-        if (matchstone.CellY + 2 == 19 || TetrisBoard[matchstone.CellX][matchstone.CellY + 3] != 0)
-            return true;
-        return false;
-    }
-
-    private void Update() {
-        for (int i = 0; i < 3; i++) {
-            if (!(GAMEOVER && matchstone.CellY + i < 0))
-                TetrisBoard[matchstone.CellX][matchstone.CellY + i] = matchstone.type[i];
-        }
-    }
-
-    private boolean CheckIsFull() {
-        ///////////////////////////////
-        /// x
-        /// x
-        /// x
-        /// control //////////////////
-        //System.out.println("Checking to up");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 19; j >= 0; j--) {
-                //if(TetrisBoard[i][j]!=0 && TBTest[i][j]==0){
-                if (TetrisBoard[i][j] != 0) {
-                    int color = TetrisBoard[i][j];
-                    int NoOfMatch = 1;
-                    while (true) {
-                        if (j - NoOfMatch >= 0) {
-                            //if(j-NoOfMatch<0) System.out.println("j-NoOfMatch<0");
-                            //if(i<0)             System.out.println("i<0");
-                            if (TetrisBoard[i][j] == TetrisBoard[i][j - NoOfMatch])
-                                NoOfMatch++;
-                            else
-                                break;
-                        } else break;
-                    }
-                    if (NoOfMatch >= 3) {
-                        //System.out.println("will check up "+NoOfMatch);
-                        for (int m = 0; m < NoOfMatch; m++)
-                            TBTest[i][j - m] = 1;
-                        falling = true;
-                        //System.out.println("yukari");                         
-                    }
-                }
-            }
-        }
-        ///////////////////////////////////////////////////
-        ///////////////////////////////
-        /// 
-        /// x x x
-        /// 
-        /// control //////////////////
-        //System.out.println("Checking to right");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 19; j >= 0; j--) {
-                if (TetrisBoard[i][j] != 0) {
-                    int color = TetrisBoard[i][j];
-                    int NoOfMatch = 1;
-                    while (true) {
-                        if (i + NoOfMatch < 10) {
-                            //if(j<0) System.out.println("j<0");
-                            //if(i+NoOfMatch<0)  System.out.println("i+NoOfMatch<0");
-
-                            if (TetrisBoard[i][j] == TetrisBoard[i + NoOfMatch][j])
-                                NoOfMatch++;
-                            else
-                                break;
-                        } else break;
-                    }
-                    if (NoOfMatch >= 3) {
-                        //System.out.println("will check right "+NoOfMatch);
-                        for (int m = 0; m < NoOfMatch; m++)
-                            TBTest[i + m][j] = 1;
-                        falling = true;
-                        //System.out.println("yana");
-                    }
-                }
-            }
-        }
-        ///////////////////////////////////////////////////
-        ///////////////////////////////
-        ///   x
-        ///  x  
-        /// x
-        /// control //////////////////
-        //System.out.println("Checking to right horizontal");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 19; j >= 0; j--) {
-                if (TetrisBoard[i][j] != 0) {
-                    int color = TetrisBoard[i][j];
-                    int NoOfMatch = 1;
-                    while (true) {
-                        if (i + NoOfMatch < 10 && j - NoOfMatch >= 0) {
-                            //if(j-NoOfMatch<0) System.out.println("j-NoOfMatch");
-                            //if(i+NoOfMatch>9)  System.out.println("i+NoOfMatch>9");
-
-                            if (TetrisBoard[i][j] == TetrisBoard[i + NoOfMatch][j - NoOfMatch])
-                                NoOfMatch++;
-                            else break;
-                        } else break;
-                    }
-                    if (NoOfMatch >= 3) {
-                        //System.out.println("will check right hor"+NoOfMatch);
-                        for (int m = 0; m < NoOfMatch; m++)
-                            TBTest[i + m][j - m] = 1;
-                        falling = true;
-                        //System.out.println("sag capraz");
-                    }
-                }
-            }
-        }
-        ///////////////////////////////////////////////////
-        ///////////////////////////////
-        /// x
-        ///  x  
-        ///   x
-        /// control //////////////////
-        //System.out.println("Checking to left horizontal");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 19; j >= 0; j--) {
-                if (TetrisBoard[i][j] != 0) {
-                    int color = TetrisBoard[i][j];
-                    int NoOfMatch = 1;
-                    while (true) {
-                        if (i - NoOfMatch >= 0 && j - NoOfMatch >= 0) {
-                            //if(j-NoOfMatch<0) System.out.println("j-NoOfMatch");
-                            //if(i-NoOfMatch<0)  System.out.println("i+NoOfMatch<0");
-
-                            if (TetrisBoard[i][j] == TetrisBoard[i - NoOfMatch][j - NoOfMatch])
-                                NoOfMatch++;
-                            else break;
-                        } else break;
-                    }
-                    if (NoOfMatch >= 3) {
-                        //System.out.println("will check left hor"+NoOfMatch);
-                        for (int m = 0; m < NoOfMatch; m++) {
-                            //System.out.println("i-m="+(i-m)+" j-m="+(j-m));
-                            TBTest[i - m][j - m] = 1;
-                        }
-                        falling = true;
-                        //System.out.println("sol capraz");
-                    }
-                }
-            }
-        }
-        if (falling) {
-            /*          //System.out.println("----------------");
-                        LetItDown();
-                        //System.out.println("After LetItDown");
-                        falling=false;
-                        CheckIsFull();
-                        //System.out.println("After 2nd CheckIsFull");
-            */
-            //Commenting for now UBASAK
-            if (false) {
-                GameMode = 1;
-                flashing = 0;
-            } else {
-                LetItDown();
-                falling = false;
-                CheckIsFull();
-            }
-        } else
-            return false;
-        return true;
-    }
-
-    private void LetItDown() {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 19; j >= 0; j--) {
-                if (TBTest[i][j] == 1) {
-                    int NoOfMatch = 1;
-                    //System.out.println("1st start");
-                    while (true) {
-                        if (j - NoOfMatch >= 0) {
-                            if (TBTest[i][j] == TBTest[i][j - NoOfMatch])
-                                NoOfMatch++;
-                            else break;
-                        } else break;
-                    }
-                    //System.out.println("1st end");
-                    /*                  int k=0;
-                                        while(true){
-                                            System.out.println("in here");
-                                            if(TetrisBoard[i][j-NoOfMatch-k]==0)
-                                                break;
-                                            k++;
-                                        }
-                                        System.out.println("k = "+k);
-                    */
-                    /*                  //int l=k;
-                                        //int l=0;
-                                        //while(l!=k){
-                                            //TetrisBoard[i][j-l] = TetrisBoard[i][j-NoOfMatch-l];
-                                            //l++;
-                                        //}
-                                        for(int l=0; l<k+1; l++){
-                                            TetrisBoard[i][j-l] = TetrisBoard[i][j-NoOfMatch-l];
-                                        }
-                                        //for(int p=0; p<NoOfMatch; p++){
-                                        //  TetrisBoard[i][j-NoOfMatch-k-p-1]=0;
-                                        //}
-                                        System.out.println("last control");
-                                        for(int m=0; m<NoOfMatch; m++){
-                                            System.out.println(j-NoOfMatch-k+m-1);
-                                            TetrisBoard[i][j-NoOfMatch-k+m-1]=0;
-                                        }
-                                        System.out.println("last control finished");
-                    */
-                    //System.out.println("NoOfMatch "+NoOfMatch+" j= "+j);
-                    int m = 0;
-                    //if(NoOfMatch==3)
-                    //System.out.println("2nd start");
-                    while (true) {
-                        if (j - m < 0) break;
-                        if ((j - m - NoOfMatch) < 0)
-                            TetrisBoard[i][j - m] = 0;
-                        else
-                            TetrisBoard[i][j - m] = TetrisBoard[i][j - NoOfMatch - m];
-                        if (j - m - 1 >= 0) {
-                            if (TetrisBoard[i][j - m - 1] == 0 || (j - m) == 0) break;
-                        }
-                        //yeni eklenti
-                        //if((k+NoOfMatch-1)==m) break;
-                        /////////
-                        m++;
-                    }
-                    //System.out.println("2nd end");
-                    //System.out.println("m = "+m);
-
-                    for (int u = 0; u < NoOfMatch; u++)
-                        TBTest[i][j - u] = 0;
-                    //puan+=((Level-2)*(Level-2))*NoOfMatch;
-                    puan += ((Level - 4) * (Level - 4)) * NoOfMatch;
-                }
-            }
-        }
-        /*for(int i=0; i<10; i++){
-            for(int j=19; j>=0; j--){
-                if(TBTest[i][j]==1) puan+=(Level-2)*(Level-2);
-                TBTest[i][j]=0;
-            }
-        }*/
-        //System.out.println("All Made Zero");
-
-        /*
-        11O22
-         534
-        5 3 4
-     */
-        /*
-            11044
-            22033
-             576
-            5 7 6
-      */
-
-
-
-    }
-
-    private void CheckGameOver() {
-        synchronized(TetrisBoard) {
-            int i = -1;
-            if (TetrisBoard[4][0] != 0) {
-                i = 0;
-            } else if (TetrisBoard[4][1] != 0) {
-                i = 1;
-            } else if (TetrisBoard[4][2] != 0) {
-                i = 2;
-            }
-            if (i != -1) {
-                GAMEOVER = true;
-                matchstone.CellY = -3 + i;
-                Update();
-                /*              if(CheckIsFull()){
-                                    System.out.println("here and not finished");
-                                    GAMEOVER=false;
-                                    matchstone = new MatchStone();
-                                    //Key = false;
-                                    CheckIsFull();
-                                }
-                                else{
-                                    System.out.println("GAME OVER!");
-                                    Score();
-                                }
-                */
-                System.out.println("GAME OVER!");
-                Score();
-            }
-        }
-    }
-
     private void DrawMenu(Graphics g, int MenuMode, boolean full, int trans) {
         //g.setFont(font);
-        g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
+        g.setClip(0, 0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT);
 
         int xy[][][] = {
             {
                 {
-                    0, BOARD_WIDTH, BOARD_HEIGHT, 0
+                    0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT, 0
                 }, {
-                    32, 32, BOARD_WIDTH, BOARD_HEIGHT
+                    32, 32, Board.BOARD_WIDTH, Board.BOARD_HEIGHT
                 }
             }, {
                 {
-                    0, BOARD_WIDTH, BOARD_HEIGHT, 0
+                    0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT, 0
                 }, {
-                    0, 0, BOARD_WIDTH, BOARD_HEIGHT
+                    0, 0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT
                 }
             }
         };
 
         //dg.fillPolygon(full ? xy[1][0] : xy[0][0],0,full ? xy[1][1] :xy[0][1],0,4,transparency[trans]);
-
         //dg.fillPolygon(full ? xy[1][0] :xy[0][0],0,full ? xy[1][1] :xy[0][1],0,4,transparency[MenuMode]);
         //dg.fillPolygon(xy[MenuMode][0],0,xy[MenuMode][1],0,4,transparency[MenuMode]);
 
@@ -1060,12 +657,7 @@ public class Game extends JPanel implements Runnable {
     private void NewGame() {
         GAMEOVER = false;
         GameMode = 0;
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 20; j++) {
-                TetrisBoard[i][j] = 0;
-                TBTest[i][j] = 0;
-            }
-        }
+        board = new Board();
         lastDraw = System.currentTimeMillis();
         puan = 0;
         matchstone = new MatchStone();
@@ -1106,58 +698,9 @@ public class Game extends JPanel implements Runnable {
         }
     }*/
 
-    private void Score() {
-        synchronized(TetrisBoard) {
-            //Score Kay?t islemleri
-            int j = 0;
-            for (j = 1; j < 10; j++) {
-                if (puan > HighScores[0]) {
-                    j = 0;
-                    break;
-                } else if (puan > HighScores[j]) break;
-            }
-            System.out.println("my j =" + j);
-            /*
-            if(j!=10){
-                for(int n=9; n>=j; n--){
-                    if(n!=j)    HighScores[n] = HighScores[n-1];
-                    else        HighScores[j] = puan;
-                }
-                try {
-                    rsMatchTris = RecordStore.openRecordStore("MatchTris",true);
-                    for(int ii=0; ii<10; ii++){
-                        System.out.println("Record "+ii+" = "+HighScores[ii] );
-                        SetRecord(rsMatchTris,HIGHSCORES+ii,HighScores[ii]);
-                    }
-                    rsMatchTris.closeRecordStore();
-                    System.out.println("Closed");
-                } catch (RecordStoreFullException e) {
-                    e.printStackTrace();
-                } catch (RecordStoreNotFoundException e) {
-                    e.printStackTrace();
-                } catch (RecordStoreException e) {
-                    e.printStackTrace();
-                }
-            } */
-            System.out.println("GameMode =" + GameMode + " GAMEOVER =" + GAMEOVER);
-        }
-    }
+    
 
-    private void DrawString(Graphics g, /*Image image,*/ int number, int x, int y) {
-        String no = "" + number;
-        int[] ints = new int[no.length()];
-        int[] distance = new int[ints.length + 1];
-        distance[0] = 0;
-        for (int i = 0; i < no.length(); i++)
-            ints[i] = Integer.parseInt(no.substring(i, i + 1));
-        for (int i = 0; i < ints.length; i++)
-            distance[i + 1] = distance[i] + WidthOfFonts[ints[i] + 1] - WidthOfFonts[ints[i]];
-        for (int i = 0; i < no.length(); i++) {
-            g.setClip(x + distance[i] + i, y, distance[i + 1] - distance[i], 20);
-            g.drawImage(blue, x + distance[i] + i - WidthOfFonts[ints[i]], y, null);
-        }
-        g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-    }
+    
 
     public void SaveLoad(boolean Save) {
         if (!Save) matchstone = new MatchStone();
