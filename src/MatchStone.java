@@ -30,7 +30,7 @@ public class MatchStone {
         for (int i = 0; i < 3; i++) {
             if (this.CellY + i >= 0) {
                 BufferedImage imagex = getSprite(image, this.type[i]);
-                g.drawImage(imagex, Board.startX+this.CellX*cell_size, Board.startY + (this.CellY + i) * cell_size, cell_size, cell_size, null);
+                g.drawImage(imagex, Constants.startX+this.CellX*cell_size, Constants.startY + (this.CellY + i) * cell_size, cell_size, cell_size, null);
             }
             //else System.out.println("Dont draw "+(this.CellY+i));
         }

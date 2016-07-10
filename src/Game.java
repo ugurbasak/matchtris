@@ -32,24 +32,13 @@ import java.awt.image.BufferedImage;
 
 public class Game extends JPanel implements Runnable {
 
-    private final int B_WIDTH = 350;
-    private final int B_HEIGHT = 350;
-    private final int DELAY = 25;
     private Thread animator;
-
-
-    public final String KEY_LEFT_ARROW = "VK_LEFT";
-    public final String KEY_RIGHT_ARROW = "VK_RIGHT";
-    public final String KEY_DOWN_ARROW = "VK_DOWN";
-    public final String KEY_UP_ARROW = "VK_UP";
-    public final String KEY_SOFTKEY1 = "VK_ENTER";
-    public final String KEY_SOFTKEY2 = "VK_SPACE";
 
     public void initGame() {
         System.out.println("Game::InitGame");
         setKeyBindings();
         setBackground(Color.BLACK);
-        setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
+        setPreferredSize(new Dimension(Constants.B_WIDTH, Constants.B_HEIGHT));
         setDoubleBuffered(true);
     }
 
@@ -110,7 +99,7 @@ public class Game extends JPanel implements Runnable {
             repaint();
 
             timeDiff = System.currentTimeMillis() - beforeTime;
-            sleep = DELAY - timeDiff;
+            sleep = Constants.DELAY - timeDiff;
 
             if (sleep < 0) {
                 sleep = 2;
@@ -128,25 +117,14 @@ public class Game extends JPanel implements Runnable {
 
 
     private Font font;
-    //private MatchTris myMidlet;
     public static int GameMode = 2;
     private Board board = null;
     private Menu menu = null;
-
-    
-
-    private long lastDraw;
-    private final long speed = 250;
-
     public MatchStone matchstone = null;
 
+    private long lastDraw;
     private boolean notall = true;
 
-    //private DirectGraphics dg;
-    int[] transparency = {
-        0xcc2C3A90, 
-        0x332C3A90
-    };
     public boolean Key = false;
     private String action = "VK_LEFT";
     private int KeyMove = 0;
@@ -159,27 +137,17 @@ public class Game extends JPanel implements Runnable {
 
     private long timePressed = 0; //about when a key is pressed or released
     public static int flashing = 0;
-    private int menuPosition = 0;
 
     private int[] HighScores;
-    private int Continue = 0;
+    public static int Continue = 0;
 
     //private RecordStore rsMatchTris = null;
 
-
-    //private final int NoOfRecords = 11; //toplma record store kay?d?
-    //1 tane contiue 20x10 tanede save game icin toplam 11 + 201 = 212tane
-    /*RecordStorelar?n final int isimleri olsun sonra degistirirsin istersen*/
-    //private final int NoOfRecords = 212; //toplma record store kay?d?
-    //MatchStone ile 215 oldu + 2 CellX ve CellY
-    //private final int NoOfRecords = 217; //toplma record store kay?d?
-    private final int NoOfRecords = 218; //toplma record store kay?d?
-    private final int LEVEL = 1, HIGHSCORES = 2, ISCONTINUE = 12, LOADTHEM = 13;
     private int transCell = 0; //Oyun bitince ekran? transparan yapacak
 
     public Game() {
         initGame();
-        font = new Font("TimesRoman", Font.PLAIN, 12);
+        font = new Font("TimesRoman", Font.PLAIN, 20);
         board = new Board();
         menu = new Menu();
         //Initialization
@@ -243,14 +211,6 @@ public class Game extends JPanel implements Runnable {
             }
             else{
                 switch(GameMode){
-                    //SPLASH
-                    case 1:
-                        gisSplashEnabled = true;
-                    break;
-                    //Main menu
-                    case 2:
-                        gisSplashEnabled = true;
-                    break;
                     
                     case 0:
                         drawAll(g);
@@ -278,7 +238,7 @@ public class Game extends JPanel implements Runnable {
         Override
         public void actionPerformed(ActionEvent actionEvt) {
                 String keyCode = actionEvt.getActionCommand();
-                System.out.println(GameMode + " - " + GAMEOVER + " - " + menuPosition + " - " + keyCode + " pressed");
+                System.out.println(GameMode + " - " + GAMEOVER + " - " + menu.menuPosition + " - " + keyCode + " pressed");
                 action = keyCode;
                 if (!GAMEOVER) {
                     if (timePressed == 0)
@@ -286,7 +246,7 @@ public class Game extends JPanel implements Runnable {
                     switch (GameMode) {
                         case 0:
                             switch (keyCode) {
-                                case KEY_LEFT_ARROW:
+                                case Constants.KEY_LEFT_ARROW:
                                     if ((System.currentTimeMillis() - timePressed) >= 40) {
                                         board.move(-1, matchstone);
                                         notall = false;
@@ -296,7 +256,7 @@ public class Game extends JPanel implements Runnable {
                                     }
                                     break;
 
-                                case KEY_RIGHT_ARROW:
+                                case Constants.KEY_RIGHT_ARROW:
                                     if ((System.currentTimeMillis() - timePressed) >= 40) {
                                         board.move(1, matchstone);
                                         notall = false;
@@ -306,7 +266,7 @@ public class Game extends JPanel implements Runnable {
                                     }
                                     break;
 
-                                case KEY_DOWN_ARROW:
+                                case Constants.KEY_DOWN_ARROW:
                                     if ((System.currentTimeMillis() - timePressed) >= 10) {
                                         board.move(0, matchstone);
                                         notall = false;
@@ -315,13 +275,13 @@ public class Game extends JPanel implements Runnable {
                                         timePressed = System.currentTimeMillis();
                                     }
                                     break;
-                                case KEY_UP_ARROW:
+                                case Constants.KEY_UP_ARROW:
                                     matchstone.Rotate();
                                     notall = false;
                                     repaint();
                                     notall = true;
                                     break;
-                                case KEY_SOFTKEY2:
+                                case Constants.KEY_SOFTKEY2:
                                     //System.out.println("Oyun durduruldu!");
                                     //SaveGame();
                                     GameMode = 2;
@@ -357,50 +317,43 @@ public class Game extends JPanel implements Runnable {
                             break;
                         case 2:
                             switch (keyCode) {
-                                case KEY_DOWN_ARROW:
-                                    menuPosition++;
-                                    menuPosition = menuPosition % menu.getLength(1);
+                                case Constants.KEY_DOWN_ARROW:
+                                case Constants.KEY_UP_ARROW:
+                                    menu.navigate(keyCode);
                                     break;
 
-                                case KEY_UP_ARROW:
-                                    menuPosition--;
-                                    if (menuPosition < 0) menuPosition += menu.getLength(1);
-                                    break;
-
-                                case KEY_SOFTKEY1:
-                                    if (menuPosition == 0) {
+                                case Constants.KEY_SOFTKEY1:
+                                    if (menu.menuPosition == 0) {
                                         System.out.println("Continue");
                                         GAMEOVER = false;
                                         GameMode = 0;
-                                    } else if (menuPosition == 1) {
+                                    } else if (menu.menuPosition == 1) {
                                         board.Score();
                                         GAMEOVER = true;
                                         GameMode = 2;
                                         //Continue=0;
-                                    } else if (menuPosition == 3) {
+                                    } else if (menu.menuPosition == 3) {
                                         /*  try {
                                                 myMidlet.destroyApp(true);
                                             } catch (MIDletStateChangeException e) {
                                                 e.printStackTrace();
                                             }*/
                                         GameMode = 3;
-                                        menuPosition = 0;
+                                        menu.menuPosition = 0;
                                     }
                             }
-                            menu.draw(menuPosition,1,true,0);
+                            menu.draw(1,true,0);
 
                             break;
 
                         case 3:
                             //System.out.println("menuPosition="+menuPosition);
                             switch (keyCode) {
-                                case KEY_DOWN_ARROW:
-                                    menuPosition = (menuPosition + 1) % 2;
+                                case Constants.KEY_DOWN_ARROW:
+                                case Constants.KEY_UP_ARROW:
+                                    menu.navigate(keyCode);
                                     break;
-                                case KEY_UP_ARROW:
-                                    menuPosition = (menuPosition + 1) % 2;
-                                    break;
-                                case KEY_SOFTKEY1:
+                                case Constants.KEY_SOFTKEY1:
                                     /*try {
                                         if(menuPosition==0) myMidlet.destroyApp(true);
                                         else                myMidlet.destroyApp(false);
@@ -411,7 +364,7 @@ public class Game extends JPanel implements Runnable {
                                     break;
                                     //}
                             }
-                            menu.draw(menuPosition,2,true,0);
+                            menu.draw(2,true,0);
                             break;
                     }
                 } else { //GAMEOVER = true
@@ -424,54 +377,15 @@ public class Game extends JPanel implements Runnable {
                             //Main menu
                         case 2:
                             switch (keyCode) {
-                                case KEY_DOWN_ARROW:
-                                    menuPosition++;
-                                    menuPosition = menuPosition % menu.getLength(Continue);
+                                case Constants.KEY_DOWN_ARROW:
+                                case Constants.KEY_UP_ARROW:
+                                case Constants.KEY_LEFT_ARROW:
+                                case Constants.KEY_RIGHT_ARROW:
+                                    menu.navigate(keyCode);
                                     break;
 
-                                case KEY_UP_ARROW:
-                                    menuPosition--;
-                                    if (menuPosition < 0) menuPosition += menu.getLength(Continue);
-                                    break;
-
-                                case KEY_LEFT_ARROW:
-                                    if (menu.getValue(0, menuPosition) == 6) {
-                                        Level--;
-                                        if (Level <= 4) Level = 8;
-                                    }
-                                    /*try {
-                                        rsMatchTris = RecordStore.openRecordStore("MatchTris",true);
-                                        SetRecord(rsMatchTris,LEVEL,Level);
-                                    } catch (RecordStoreFullException e) {
-                                        e.printStackTrace();
-                                    } catch (RecordStoreNotFoundException e) {
-                                        e.printStackTrace();
-                                    } catch (RecordStoreException e) {
-                                        e.printStackTrace();
-                                    } */
-
-                                    break;
-
-                                case KEY_RIGHT_ARROW:
-                                    if (menu.getValue(0, menuPosition) == 6) {
-                                        Level++;
-                                        //if(Level==9) Level=3;
-                                        if (Level >= 9) Level = 5;
-                                    }
-                                    /*try {
-                                        rsMatchTris = RecordStore.openRecordStore("MatchTris",true);
-                                        SetRecord(rsMatchTris,LEVEL,Level);
-                                    } catch (RecordStoreFullException e) {
-                                        e.printStackTrace();
-                                    } catch (RecordStoreNotFoundException e) {
-                                        e.printStackTrace();
-                                    } catch (RecordStoreException e) {
-                                        e.printStackTrace();
-                                    }*/
-                                    break;
-
-                                case KEY_SOFTKEY1:
-                                    int menuValue = menu.getValue(Continue, menuPosition);
+                                case Constants.KEY_SOFTKEY1:
+                                    int menuValue = menu.getValue(Continue, menu.menuPosition);
                                     if (menuValue == 5) { //EXIT
                                         //try {
                                         //  myMidlet.destroyApp(true);
@@ -509,17 +423,17 @@ public class Game extends JPanel implements Runnable {
                                     break;
                             }
                                if(Continue==1){
-                                    menu.draw(menuPosition,1,false,0);
+                                    menu.draw(1,false,0);
                                 }
                                 else{
-                                    menu.draw(menuPosition,0,false,0);
+                                    menu.draw(0,false,0);
                                 }
                             break;
 
                         case 0:
                             //g.drawString("GAME OVER",0,60);
                             //System.out.println("Case 0");
-                            if (KEY_SOFTKEY1 == keyCode) {
+                            if (Constants.KEY_SOFTKEY1 == keyCode) {
                                 System.out.println("Game Over");
                                 GameMode = 2;
                             }
@@ -551,7 +465,7 @@ public class Game extends JPanel implements Runnable {
                         if(GameMode == 0){
                             //switch (action) {
                             switch (keyCode) {
-                            case KEY_UP_ARROW:
+                            case Constants.KEY_UP_ARROW:
                                 keyPressed(keyCode);
                             break;
                             default:
@@ -563,6 +477,7 @@ public class Game extends JPanel implements Runnable {
     } //TAdapter
 
     private void myPaint(Graphics g, boolean all) {
+        g.setFont(font);
         if (all) paintBoard(g);
         else board.drawAll(g);
         drawSplash(g);
@@ -572,12 +487,12 @@ public class Game extends JPanel implements Runnable {
 
     private void paintBoard(Graphics g) {
         board.drawAll(g);
-        g.setClip(0, 0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT);
+        g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         if (!GAMEOVER) {
             board.CheckGameOver(matchstone);
             if(matchstone != null)
-                matchstone.DrawShape(g, Board.balls, Board.CELL_SIZE);
-            if (System.currentTimeMillis() - lastDraw >= speed) {
+                matchstone.DrawShape(g, Board.balls, Constants.CELL_SIZE);
+            if (System.currentTimeMillis() - lastDraw >= Constants.speed) {
                 if (board.Check(matchstone)) {
                     board.Update(matchstone);
                     //matchstone = null;
@@ -594,7 +509,7 @@ public class Game extends JPanel implements Runnable {
 
     private void drawSplash(Graphics g) {
         if( GameMode != 2 ) return;
-        g.drawImage(Board.splash,0,0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT,null);        
+        g.drawImage(Board.splash,0,0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT,null);        
     }
 
     private void NewGame() {

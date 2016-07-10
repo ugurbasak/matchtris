@@ -36,20 +36,8 @@ import java.io.File;
 
 public class Board {
 
-    public static final int startX = 4;
-    public static final int startY = 4;
-    public static final int CELL_SIZE = 16; //These 3 constanst needs to be completely parametric, now it is only available for 6 pixel balls
-    public static final int BOARD_WIDTH = CELL_SIZE * 20 + 8;
-    public static final int BOARD_HEIGHT = CELL_SIZE * 20 + 8;
-
     public int[][] TetrisBoard;
     public int[][] TBTest;
-
-    //0 1 ... 9 rakamlar?n?n geni?likleri
-    //private final int[] WidthOfFonts = { 0,9,16,26,35,44,53,62,71,81,90 };
-    private final int[] WidthOfFonts = {
-        0, 8, 12, 20, 28, 36, 44, 52, 60, 68, 76
-    };
 
     public static BufferedImage balls = null;
     public static BufferedImage border = null;
@@ -87,37 +75,37 @@ public class Board {
     }
 
     public void drawAll(Graphics g) {
-        g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
+        g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         g.setColor(Color.gray);
-        g.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
+        g.fillRect(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 20; j++) {
-                int x_v = startX + i * CELL_SIZE;
-                int y_v = startY + j * CELL_SIZE;
+                int x_v = Constants.startX + i * Constants.CELL_SIZE;
+                int y_v = Constants.startY + j * Constants.CELL_SIZE;
                 if (TetrisBoard[i][j] != 0) {
                     BufferedImage image = getSprite(balls, TetrisBoard[i][j]);
-                    g.drawImage(image, x_v, y_v, CELL_SIZE, CELL_SIZE, null);
+                    g.drawImage(image, x_v, y_v, Constants.CELL_SIZE, Constants.CELL_SIZE, null);
                 } else {
-                    g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-                    g.drawImage(back, x_v, y_v, CELL_SIZE, CELL_SIZE, null);
+                    g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
+                    g.drawImage(back, x_v, y_v, Constants.CELL_SIZE, Constants.CELL_SIZE, null);
                 }
             }
         }
-        g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-        for (int i = 0; i < BOARD_WIDTH / 4; i++) {
-            g.drawImage(border, BOARD_WIDTH / 2, i * 4, null);
+        g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
+        for (int i = 0; i < Constants.BOARD_WIDTH / 4; i++) {
+            g.drawImage(border, Constants.BOARD_WIDTH / 2, i * 4, null);
             g.drawImage(border, 0, i * 4, null);
         }
-        for (int i = 0; i < BOARD_WIDTH / 8; i++) {
-            g.drawImage(border, i * 4, BOARD_WIDTH - 4 , null);
+        for (int i = 0; i < Constants.BOARD_WIDTH / 8; i++) {
+            g.drawImage(border, i * 4, Constants.BOARD_WIDTH - 4 , null);
             g.drawImage(border, i * 4, 0, null);
         }
         /*g.setColor(0x000000);
         g.drawString("Puan",80,5);
         g.drawString(""+puan,80,15);
         */
-        g.drawImage(imgPuan, (10 + 2) * CELL_SIZE , 5, null);
-        DrawString(g, Game.puan, (10 + 2) * CELL_SIZE, 30);
+        g.drawImage(imgPuan, (10 + 2) * Constants.CELL_SIZE , 5, null);
+        DrawString(g, Game.puan, (10 + 2) * Constants.CELL_SIZE, 30);
     }
 
     public boolean CheckIsFull() {
@@ -406,12 +394,12 @@ public class Board {
         for (int i = 0; i < no.length(); i++)
             ints[i] = Integer.parseInt(no.substring(i, i + 1));
         for (int i = 0; i < ints.length; i++)
-            distance[i + 1] = distance[i] + WidthOfFonts[ints[i] + 1] - WidthOfFonts[ints[i]];
+            distance[i + 1] = distance[i] + Constants.WidthOfFonts[ints[i] + 1] - Constants.WidthOfFonts[ints[i]];
         for (int i = 0; i < no.length(); i++) {
             g.setClip(x + distance[i] + i, y, distance[i + 1] - distance[i], 20);
-            g.drawImage(blue, x + distance[i] + i - WidthOfFonts[ints[i]], y, null);
+            g.drawImage(blue, x + distance[i] + i - Constants.WidthOfFonts[ints[i]], y, null);
         }
-        g.setClip(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
+        g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
     }
 
     public boolean Check(MatchStone matchstone) {

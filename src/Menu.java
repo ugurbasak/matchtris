@@ -7,94 +7,22 @@ import java.awt.Graphics;
 import java.util.Random;
 
 public class Menu {
-    private String[] strMenu = {
-        "New Game", "Continue", "Finish Game",
-        "Help", "About", "Exit", "Level", "YES", "NO"
-    };
-    private int[][] MenuModes = {
-        {
-            0, 6, 3, 4, 5
-        }, {
-            1, 2, 3, 5
-        }, {
-            7, 8
-        }
-    };
 
     public int currentmode = 0;
     public int menuPosition = 0; //Need to move menuPosition from Game.java to here
     public boolean isFull = false;
     public int trans = 0;
-    //private List myList;
-    //private Form myForm;
-    //private StringItem myStringItem;
-    //private Command cmdBack;
-    //private Command cmdMenu;
-    //private Command cmdOk;
-    //private MatchTris myMidlet;
 
-    public Menu( /*MatchTris myMidlet*/ ) {
-        //this.myMidlet=myMidlet;
-        //cmdOk=new Command("Tamam",Command.SCREEN,1);
-        //cmdMenu=new Command("Menu",Command.BACK,1);
-        //cmdBack=new Command("Geri",Command.BACK,1);
+    public Menu() { 
     }
 
     public void openMenu(int menumode) {
-
         currentmode = menumode;
-
-        switch (menumode) {
-
-            case 0:
-                /* Must be a menu but it can be re-implemented
-                myList = null;
-                myList = new List("Shoot Me", List.IMPLICIT);
-                myList.append("Yeni oyun", null);
-                myList.append("Ayarlar", null);
-                myList.append("Yardim", null);
-                myList.append("Test", null);
-                myList.append("Kapat", null);
-                myList.addCommand(cmdOk);
-                myList.setCommandListener(this);
-                Display.getDisplay(myMidlet).setCurrent(myList);
-            */
-                break;
-        }
-    }
-
-    public void commandAction( /*Command c, Displayable d*/ ) {
-
-        /*      if(c==cmdOk){
-                    switch(currentmode){
-                        case 0:
-                            if(myList.getSelectedIndex()==0){
-                                
-                            }
-                            else if(myList.getSelectedIndex()==1){
-                                
-                            }
-                            else if(myList.getSelectedIndex()==2){
-                                
-                            }
-                            else if(myList.getSelectedIndex()==3){
-                                
-                            }
-                            else if(myList.getSelectedIndex()==4){
-                                
-                            }
-                        break;
-                    }
-                }else if(c==cmdBack){
-                    
-                }else if(c==cmdMenu){
-                    openMenu(0);
-                } */
     }
 
     public void draw(Graphics g) {
-        g.setClip(0, 0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT);
-
+        g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
+        /*
         int xy[][][] = {
             {
                 {
@@ -109,21 +37,22 @@ public class Menu {
                     0, 0, Board.BOARD_WIDTH, Board.BOARD_HEIGHT
                 }
             }
-        };
+        };*/
 
-        for (int i = 0; i < MenuModes[this.currentmode].length; i++) {
+        int x = Constants.BOARD_WIDTH  / 2 - 50;
+        int y = Constants.BOARD_HEIGHT / 2 - 10;
+        int length = this.getLength(this.currentmode);
+        g.setColor(Color.black);
+        g.fillRect(x-5, y-20, 100, length * 15 + 10);
+        for (int i = 0; i < length; i++) {
             if (i == menuPosition) g.setColor(Color.red);
             else g.setColor(Color.white);
-            if (MenuModes[this.currentmode][i] == 6) {
-                //int x = font.stringWidth(strMenu[MenuModes[MenuMode][i]]+" "+(Level-4));  
-                int x = 10; //UBASAK
-                g.drawString(strMenu[MenuModes[this.currentmode][i]] + " " + (Game.Level - 4), (128 - x) / 2, 40 + i * 15);
-
-            } else {
-                int x = 10; //UBASAK
-                //int x = font.stringWidth(strMenu[MenuModes[MenuMode][i]]);    
-                g.drawString(strMenu[MenuModes[this.currentmode][i]], (128 - x) / 2, 40 + i * 15);
+            int val = this.getValue(this.currentmode, i); 
+            String text = Constants.strMenu[val];
+            if (val == 6 ) {
+                text += " " + (Game.Level - 4);
             }
+            g.drawString(text, x, y + i * 15);
 
             if (this.currentmode == 2) {
                 g.setColor(Color.white);
@@ -133,19 +62,79 @@ public class Menu {
         }
     }
 
-    public void draw(int menuPosition, int mode, boolean full, int trans) {
+    public void draw( int mode, boolean full, int trans) {
         this.currentmode = mode;
         this.isFull = full;
         this.trans = trans;
-        this.menuPosition = menuPosition;
-        System.out.println(menuPosition);
     }
     
     public int getValue(int mode, int index) {
-        return MenuModes[mode][index];
+        return Constants.MenuModes[mode][index];
     }
 
     public int getLength(int mode) {
-        return MenuModes[mode].length;
+        return Constants.MenuModes[mode].length;
+    }
+
+    public void navigate(String keyCode) {
+        //default behavior is for gameover && GameMode=2
+        // !gameover 3
+        //menuPosition = (menuPosition + 1) % 2;
+        // !gameover 2
+        //case KEY_DOWN_ARROW:
+        //menuPosition++;
+        //menuPosition = menuPosition % this.getLength(1);
+        //case KEY_UP_ARROW:
+        //menuPosition--;
+        //if (menuPosition < 0) menuPosition += this.getLength(1);
+                                    
+        switch (keyCode) {
+
+            case Constants.KEY_DOWN_ARROW:
+                menuPosition++;
+                menuPosition = menuPosition % this.getLength(Game.Continue);
+                break;
+
+            case Constants.KEY_UP_ARROW:
+                menuPosition--;
+                if (menuPosition < 0) menuPosition += this.getLength(Game.Continue);
+                break;
+
+            case Constants.KEY_LEFT_ARROW:
+                if (this.getValue(0, menuPosition) == 6) {
+                    Game.Level--;
+                    if (Game.Level <= 4) Game.Level = 8;
+                }
+                /*try {
+                    rsMatchTris = RecordStore.openRecordStore("MatchTris",true);
+                    SetRecord(rsMatchTris,LEVEL,Level);
+                } catch (RecordStoreFullException e) {
+                    e.printStackTrace();
+                } catch (RecordStoreNotFoundException e) {
+                    e.printStackTrace();
+                } catch (RecordStoreException e) {
+                    e.printStackTrace();
+                } */
+
+                break;
+
+            case Constants.KEY_RIGHT_ARROW:
+                if (this.getValue(0, menuPosition) == 6) {
+                    Game.Level++;
+                    //if(Level==9) Level=3;
+                    if (Game.Level >= 9) Game.Level = 5;
+                }
+                /*try {
+                    rsMatchTris = RecordStore.openRecordStore("MatchTris",true);
+                    SetRecord(rsMatchTris,LEVEL,Level);
+                } catch (RecordStoreFullException e) {
+                    e.printStackTrace();
+                } catch (RecordStoreNotFoundException e) {
+                    e.printStackTrace();
+                } catch (RecordStoreException e) {
+                    e.printStackTrace();
+                }*/
+                break;
+        }
     }
 }
