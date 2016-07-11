@@ -131,4 +131,8 @@ public class Menu {
                 break;
         }
     }
+
+    public int getCommand() {
+        return this.getValue(currentmode, menuPosition);
+    }
 }

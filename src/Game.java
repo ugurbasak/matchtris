@@ -263,21 +263,7 @@ public class Game extends JPanel implements Runnable {
                     menu.navigate(keyCode);
                     break;
                 case Constants.KEY_SOFTKEY1:
-                    if (menu.menuPosition == 0) {
-                        //Continue
-                        GAMEOVER = false;
-                        GameMode = 0;
-                    } else if (menu.menuPosition == 1) {
-                        board.Score();
-                        GAMEOVER = true;
-                        GameMode = 2;
-                        //Continue=0;
-                    } else if (menu.menuPosition == 3) {
-                        System.exit(0);
-                        //we are exiting but there are some flows, check this. UBASAK
-                        GameMode = 3;
-                        menu.menuPosition = 0;
-                    }
+                    evaluateCommand();
             }
         } else if(GameMode == 3) {
             switch (keyCode) {
@@ -286,7 +272,7 @@ public class Game extends JPanel implements Runnable {
                     menu.navigate(keyCode);
                     break;
                 case Constants.KEY_SOFTKEY1:
-                    System.exit(0);
+                    evaluateCommand();
                     break;
             }
         }
@@ -295,11 +281,12 @@ public class Game extends JPanel implements Runnable {
     private void passiveGameActions(String keyCode) {
         if( GameMode == 0) {
             //g.drawString("GAME OVER",0,60);
-            //System.out.println("Case 0");
+            System.out.println("Case 0");
             if (Constants.KEY_SOFTKEY1 == keyCode) {
                 System.out.println("Game Over");
                 GameMode = 2;
             }
+            //GameOver now it is time to draw the transparant part UBASAK
             /* This code looks like old or new keypress code 
             drawAll(g);
             int xy[][] ={ {startX,startX+6*10,startX+6*10,startX},
@@ -326,27 +313,42 @@ public class Game extends JPanel implements Runnable {
                         menu.navigate(keyCode);
                         break;
                     case Constants.KEY_SOFTKEY1:
-                        int menuValue = menu.getValue(Continue, menu.menuPosition);
-                        if (menuValue == 5) { //EXIT
-                            System.exit(0);
-                        } else if (menuValue == 3) { //HELP
-
-                        } else if (menuValue == 0) { //NEW ONE
-                            System.out.println("Starts");
-                            NewGame();
-                        } else if (menuValue == 1) { //CONTINUE
-                            matchstone = new MatchStone(); //UBASAK, why do we need to create???
-                            store.SaveLoad(false);
-                            System.out.println("Loaded");
-                            GAMEOVER = false;
-                            GameMode = 0;
-                            Continue = 0;
-                        } else if (menuValue == 2) { //FINISH
-                        } else if (menuValue == 4) { //ABOUT
-                        }
+                        evaluateCommand();
                         break;
                 }
             }
+    }
+
+    private void evaluateCommand() {
+        int menuValue = menu.getCommand();
+        if (menuValue == 0) { //NEW ONE
+            System.out.println("Starts");
+            NewGame();
+        }
+        else if (menuValue == 1) { //CONTINUE
+            matchstone = new MatchStone(); //UBASAK, why do we need to create???
+            store.SaveLoad(false);
+            System.out.println("Loaded");
+            GAMEOVER = false;
+            GameMode = 0;
+            Continue = 0;
+        } else if (menuValue == 2) { //FINISH
+            this.GameMode = 2;
+            this.GAMEOVER = true;
+            this.Continue = 0;
+        } else if (menuValue == 3) { //HELP
+            board.Score();
+            GAMEOVER = true;
+            GameMode = 2;
+            //Continue=0;
+        } else if (menuValue == 4) { //ABOUT
+
+        } else if (menuValue == 5) { //EXIT
+            System.exit(0);
+            //we are exiting but there are some flows, check this. UBASAK
+            //GameMode = 3;
+            //menu.menuPosition = 0;
+        }
     }
 
     private void paintGame(Graphics g) {
