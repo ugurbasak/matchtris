@@ -162,38 +162,6 @@ public class Game extends JPanel implements Runnable {
         store.loadScores();
     }
 
-    /* This code looks like old or new keypress code 
-            if(!GAMEOVER){
-                switch(GameMode){
-                    case 0:
-                    myPaint(g,notall);
-                    if(Key){
-                        switch(action) {
-                        }
-                    }
-                    break;
-                }               
-            }
-            else{
-                switch(GameMode){
-                    
-                    case 0:
-                        drawAll(g);
-                        int xy[][] ={ {startX,startX+6*10,startX+6*10,startX},
-                                      {128-startY-transCell*6,128-startY-transCell*6,128-startY,128-startY} };
-                        dg.fillPolygon(xy[0],0,xy[1],0,4,0x88888888);
-                        //g.drawString("GAME OVER",0,60);
-                        if(transCell!=20)
-                            transCell++;
-                        else{
-                            g.setColor(0x000000);
-                            g.drawString("GAME OVER",0,60);
-                        }
-                    break;
-                }
-            }
-        } */
-
     private class KeyAction extends AbstractAction {
         public KeyAction(String actionCommand) {
             putValue(ACTION_COMMAND_KEY, actionCommand);
@@ -202,50 +170,51 @@ public class Game extends JPanel implements Runnable {
         @
         Override
         public void actionPerformed(ActionEvent actionEvt) {
-                String keyCode = actionEvt.getActionCommand();
-                System.out.println(GameMode + " - " + GAMEOVER + " - " + menu.menuPosition + " - " + keyCode + " pressed");
-                if (!GAMEOVER) {
-                    if (timePressed == 0)
-                        timePressed = System.currentTimeMillis();
-                    activeGameActions(keyCode);
-                } else { //GAMEOVER = true
-                    passiveGameActions(keyCode);
+            String keyCode = actionEvt.getActionCommand();
+            System.out.println(GameMode + " - " + GAMEOVER + " - " + menu.menuPosition + " - " + keyCode + " pressed");
+            if (!GAMEOVER) {
+                if (timePressed == 0)
+                    timePressed = System.currentTimeMillis();
+                activeGameActions(keyCode);
+            } else { //GAMEOVER = true
+                passiveGameActions(keyCode);
+            }
+        }
+
+        /* UBASAK - For J2ME applications I was using keyreleased and keyrepeated events, check if they are necessary.
+        @Override
+        protected void keyReleased(int keyCode) {
+            //System.out.println("Key "+Key);
+            //System.out.println("Key released "+getGameAction(keyCode));
+            timePressed = 0;
+            Key = false;
+            KeyMove = 0;
+        }
+
+        @Override
+        protected void keyRepeated(int keyCode) {
+            //int action = getGameAction(keyCode);
+            action = keyCode;
+            if(!Key){
+                Key=true;
+                System.out.println("false olmus");
+            }
+            if(!GAMEOVER){
+                //if((System.currentTimeMillis() - timePressed)>=50)
+                //  timePressed = System.currentTimeMillis();
+                if(GameMode == 0){
+                    //switch (action) {
+                    switch (keyCode) {
+                    case Constants.KEY_UP_ARROW:
+                        keyPressed(keyCode);
+                    break;
+                    default:
+                        break;
+                    }
                 }
             }
-            /* UBASAK - For J2ME applications I was using keyreleased and keyrepeated events, check if they are necessary.
-
-                    @Override
-                protected void keyReleased(int keyCode) {
-                    //System.out.println("Key "+Key);
-                    //System.out.println("Key released "+getGameAction(keyCode));
-                    timePressed = 0;
-                    Key = false;
-                    KeyMove = 0;
-                }
-
-                        @Override
-                protected void keyRepeated(int keyCode) {
-                    //int action = getGameAction(keyCode);
-                    action = keyCode;
-                    if(!Key){
-                        Key=true;
-                        System.out.println("false olmus");
-                    }
-                    if(!GAMEOVER){
-                        //if((System.currentTimeMillis() - timePressed)>=50)
-                        //  timePressed = System.currentTimeMillis();
-                        if(GameMode == 0){
-                            //switch (action) {
-                            switch (keyCode) {
-                            case Constants.KEY_UP_ARROW:
-                                keyPressed(keyCode);
-                            break;
-                            default:
-                                break;
-                            }
-                        }
-                    }
-                } */
+        }
+        */
     } //TAdapter
 
     private void activeGameActions(String keyCode) {
@@ -340,6 +309,19 @@ public class Game extends JPanel implements Runnable {
                 System.out.println("Game Over");
                 GameMode = 2;
             }
+            /* This code looks like old or new keypress code 
+            drawAll(g);
+            int xy[][] ={ {startX,startX+6*10,startX+6*10,startX},
+                          {128-startY-transCell*6,128-startY-transCell*6,128-startY,128-startY} };
+            dg.fillPolygon(xy[0],0,xy[1],0,4,0x88888888);
+            //g.drawString("GAME OVER",0,60);
+            if(transCell!=20)
+                transCell++;
+            else{
+                g.setColor(0x000000);
+                g.drawString("GAME OVER",0,60);
+            }
+            */
         } else if( GameMode == 1) {
             //SPLASH
             GameMode = 2;
@@ -371,19 +353,6 @@ public class Game extends JPanel implements Runnable {
                         } else if (menuValue == 2) { //FINISH
                         } else if (menuValue == 4) { //ABOUT
                         }
-                        /*                          if(menuPosition == 0){ 
-                                                        System.out.println("Starts");
-                                                        NewGame();
-                                                    }
-                                                    else if(menuPosition == 4){
-                                                        //myMidlet.notifyDestroyed();
-                                                        try {
-                                                            myMidlet.destroyApp(true);
-                                                        } catch (MIDletStateChangeException e1) {
-                                                            e1.printStackTrace();
-                                                        }
-                                                    }
-                        */
                         break;
                 }
                 if(Continue==1){
