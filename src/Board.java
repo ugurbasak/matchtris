@@ -38,6 +38,7 @@ public class Board {
 
     public int[][] TetrisBoard;
     public int[][] TBTest;
+    private boolean isFlashingEnabled = false;
 
     public static BufferedImage balls = null;
     public static BufferedImage border = null;
@@ -88,7 +89,7 @@ public class Board {
             for (int j = 0; j < 20; j++) {
                 int x_v = Constants.startX + i * Constants.CELL_SIZE;
                 int y_v = Constants.startY + j * Constants.CELL_SIZE;
-                if (TetrisBoard[i][j] != 0) {
+                if (TetrisBoard[i][j] != 0 && isValidCellForRendering(i, j) ) {
                     BufferedImage image = getSprite(balls, TetrisBoard[i][j]);
                     g.drawImage(image, x_v, y_v, Constants.CELL_SIZE, Constants.CELL_SIZE, null);
                 } else {
@@ -96,6 +97,18 @@ public class Board {
                     g.drawImage(back, x_v, y_v, Constants.CELL_SIZE, Constants.CELL_SIZE, null);
                 }
             }
+        }
+    }
+
+    private boolean isValidCellForRendering(int i, int j) {
+        if( !isFlashingEnabled ) {
+            return true;
+        }
+
+        if ( this.TBTest[i][j] == 1 ) {
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -123,27 +136,23 @@ public class Board {
         this.checkLeftHorizontal();
 
         if (Game.falling) {
-            /*
-            //System.out.println("----------------");
-            LetItDown();
-            //System.out.println("After LetItDown");
-            falling=false;
-            CheckIsFull();
-            //System.out.println("After 2nd CheckIsFull");
-            */
-            //Commenting for now UBASAK
-            if (false) {
+            // The first code block means flashing is active, can make this code parametric.:w
+            if (true) {
                 Game.GameMode = 1;
                 Game.flashing = 0;
             } else {
-                LetItDown();
-                Game.falling = false;
-                CheckIsFull();
+                this.handleFalling();
             }
         } else {
             return false;
         }
         return true;
+    }
+
+    public void handleFalling() {
+        LetItDown();
+        Game.falling = false;
+        CheckIsFull();
     }
 
     private void checkToUp() {
@@ -289,7 +298,7 @@ public class Board {
         }
     }
 
-    public void LetItDown() {
+    private void LetItDown() {
         for (int i = 0; i < 10; i++) {
             for (int j = 19; j >= 0; j--) {
                 if (TBTest[i][j] == 1) {
@@ -439,9 +448,17 @@ public class Board {
     }
 
     public void Update(MatchStone matchstone) {
+        if( Game.GAMEOVER ) {
+            return;
+        }
+
+        int x = matchstone.CellX;
+        int y = matchstone.CellY;
+
         for (int i = 0; i < 3; i++) {
-            if (!(Game.GAMEOVER && matchstone.CellY + i < 0))
-                TetrisBoard[matchstone.CellX][matchstone.CellY + i] = matchstone.type[i];
+            if ( y + i >= 0 ) {
+                TetrisBoard[x][y + i] = matchstone.type[i];
+            }
         }
     }
 
@@ -549,5 +566,9 @@ public class Board {
         } else if (Game.GameMode == 0 && Game.GAMEOVER == true) {
             System.out.println("The error is at this point. What error?");
         }
+    }
+
+    public void setFlashing(boolean isFlashingEnabled) {
+        this.isFlashingEnabled = isFlashingEnabled;
     }
 }

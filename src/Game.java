@@ -45,7 +45,7 @@ public class Game extends JPanel implements Runnable {
     //Game state properties --needs heavy refactoring. UBASAK
     public static int GameMode = 2;
     private long lastDraw;
-    private boolean notall = true;
+    public static int flashing = 0;
     public boolean Key = false;
     private int KeyMove = 0;
     public static boolean falling = false;
@@ -54,7 +54,6 @@ public class Game extends JPanel implements Runnable {
     public static int Level = 6;
     public static int puan = 0;
     private long timePressed = 0; //about when a key is pressed or released
-    public static int flashing = 0;
     public static int Continue = 0;
     private int transCell = 0; //When the game ends using this propert board will be covered with a transparent layer
 
@@ -99,24 +98,34 @@ public class Game extends JPanel implements Runnable {
     Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        myPaint(g, notall);
+        paintGame(g);
     }
 
     private void cycle() {
         //Any updates
         if (!GAMEOVER) {
-            board.CheckGameOver(matchstone);
-            if (System.currentTimeMillis() - lastDraw >= Constants.speed) {
-                if (board.Check(matchstone)) {
-                    board.Update(matchstone);
-                    //matchstone = null;
-                    matchstone = new MatchStone();
-                    //Key = false;
-                    board.CheckIsFull();
-                } else {
-                    matchstone.CellY++;
+            if( GameMode == 0 ) {
+                board.CheckGameOver(matchstone);
+                if (System.currentTimeMillis() - lastDraw >= Constants.speed) {
+                    if (board.Check(matchstone)) {
+                        board.Update(matchstone);
+                        //matchstone = null;
+                        matchstone = new MatchStone();
+                        //Key = false;
+                        board.CheckIsFull();
+                    } else {
+                        matchstone.CellY++;
+                    }
+                    lastDraw = System.currentTimeMillis();
                 }
-                lastDraw = System.currentTimeMillis();
+            } else if( GameMode == 1) {
+                if (++flashing == 10) {
+                    GameMode = 0;
+                    board.setFlashing(false);
+                    board.handleFalling();
+                } else {
+                    board.setFlashing( flashing % 2 == 0);
+                }
             }
         }
     }
@@ -176,7 +185,8 @@ public class Game extends JPanel implements Runnable {
                 if (timePressed == 0)
                     timePressed = System.currentTimeMillis();
                 activeGameActions(keyCode);
-            } else { //GAMEOVER = true
+            } else {
+                //GAMEOVER = true
                 passiveGameActions(keyCode);
             }
         }
@@ -233,9 +243,10 @@ public class Game extends JPanel implements Runnable {
                     matchstone.Rotate();
                     break;
                 case Constants.KEY_SOFTKEY2:
-                    //System.out.println("Oyun durduruldu!");
+                    //Stop
                     //SaveGame();
                     GameMode = 2;
+                    Continue = 1;
                     break;
                 default:
                     Key = true;
@@ -245,24 +256,6 @@ public class Game extends JPanel implements Runnable {
         } else if (GameMode == 1) {
             //Game is going on but flashing cause of Letting it down!
             //Need to implement this againg UBASAK
-            /*
-            drawAll(g);
-            if(flashing%2==0){
-                for(int i=0; i<10; i++){
-                    for(int j=0; j<20; j++){
-                        if(TBTest[i][j]==1){
-                            g.setClip(0,0,BOARD_WIDTH,BOARD_HEIGHT);
-                            g.drawImage(back,i*6+startX,j*6+startY);
-                        }               
-                    }
-                }
-            } */
-            if (++flashing == 10) {
-                GameMode = 0;
-                board.LetItDown();
-                falling = false;
-                board.CheckIsFull();
-            }
         } else if (GameMode == 2) {
             switch (keyCode) {
                 case Constants.KEY_DOWN_ARROW:
@@ -271,7 +264,7 @@ public class Game extends JPanel implements Runnable {
                     break;
                 case Constants.KEY_SOFTKEY1:
                     if (menu.menuPosition == 0) {
-                        System.out.println("Continue");
+                        //Continue
                         GAMEOVER = false;
                         GameMode = 0;
                     } else if (menu.menuPosition == 1) {
@@ -286,7 +279,6 @@ public class Game extends JPanel implements Runnable {
                         menu.menuPosition = 0;
                     }
             }
-            menu.draw(1,true,0);
         } else if(GameMode == 3) {
             switch (keyCode) {
                 case Constants.KEY_DOWN_ARROW:
@@ -297,7 +289,6 @@ public class Game extends JPanel implements Runnable {
                     System.exit(0);
                     break;
             }
-            menu.draw(2,true,0);
         }
     }
 
@@ -355,26 +346,26 @@ public class Game extends JPanel implements Runnable {
                         }
                         break;
                 }
-                if(Continue==1){
-                    menu.draw(1,false,0);
-                }
-                else{
-                    menu.draw(0,false,0);
-                }
             }
     }
 
-    private void myPaint(Graphics g, boolean all) {
+    private void paintGame(Graphics g) {
         g.setFont(font);
-        if (all) paintBoard(g);
-        else board.drawAll(g);
+        board.drawAll(g);
+        paintBoard(g);
         drawSplash(g);
-        if(GameMode == 2 || GameMode == 3)
-            menu.draw(g);
+        drawMenu(g);
+    }
+
+    private void drawMenu(Graphics g) {
+        if( GameMode == 2 || GameMode == 3) {
+            int mode = GameMode - 1;
+            if( Continue == 0 ) mode--;
+            menu.draw(g, mode);
+        }
     }
 
     private void paintBoard(Graphics g) {
-        board.drawAll(g);
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         if( !GAMEOVER && matchstone != null ) {
             matchstone.DrawShape(g, Board.balls, Constants.CELL_SIZE);

@@ -10,7 +10,6 @@ public class Menu {
 
     public int currentmode = 0;
     public int menuPosition = 0; //Need to move menuPosition from Game.java to here
-    public boolean isFull = false;
     public int trans = 0;
 
     public Menu() { 
@@ -20,7 +19,8 @@ public class Menu {
         currentmode = menumode;
     }
 
-    public void draw(Graphics g) {
+    public void draw(Graphics g, int mode) {
+        this.currentmode = mode;
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         /*
         int xy[][][] = {
@@ -62,12 +62,6 @@ public class Menu {
         }
     }
 
-    public void draw( int mode, boolean full, int trans) {
-        this.currentmode = mode;
-        this.isFull = full;
-        this.trans = trans;
-    }
-    
     public int getValue(int mode, int index) {
         return Constants.MenuModes[mode][index];
     }
