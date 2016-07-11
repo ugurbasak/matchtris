@@ -47,7 +47,6 @@ public class Game extends JPanel implements Runnable {
     private long lastDraw;
     private boolean notall = true;
     public boolean Key = false;
-    private String action = Constants.KEY_LEFT_ARROW;
     private int KeyMove = 0;
     public static boolean falling = false;
     private int falling_times = 0;
@@ -105,6 +104,21 @@ public class Game extends JPanel implements Runnable {
 
     private void cycle() {
         //Any updates
+        if (!GAMEOVER) {
+            board.CheckGameOver(matchstone);
+            if (System.currentTimeMillis() - lastDraw >= Constants.speed) {
+                if (board.Check(matchstone)) {
+                    board.Update(matchstone);
+                    //matchstone = null;
+                    matchstone = new MatchStone();
+                    //Key = false;
+                    board.CheckIsFull();
+                } else {
+                    matchstone.CellY++;
+                }
+                lastDraw = System.currentTimeMillis();
+            }
+        }
     }
 
     @
@@ -190,190 +204,12 @@ public class Game extends JPanel implements Runnable {
         public void actionPerformed(ActionEvent actionEvt) {
                 String keyCode = actionEvt.getActionCommand();
                 System.out.println(GameMode + " - " + GAMEOVER + " - " + menu.menuPosition + " - " + keyCode + " pressed");
-                action = keyCode;
                 if (!GAMEOVER) {
                     if (timePressed == 0)
                         timePressed = System.currentTimeMillis();
-                    switch (GameMode) {
-                        case 0:
-                            switch (keyCode) {
-                                case Constants.KEY_LEFT_ARROW:
-                                    if ((System.currentTimeMillis() - timePressed) >= 40) {
-                                        board.move(-1, matchstone);
-                                        notall = false;
-                                        repaint();
-                                        notall = true;
-                                        timePressed = System.currentTimeMillis();
-                                    }
-                                    break;
-
-                                case Constants.KEY_RIGHT_ARROW:
-                                    if ((System.currentTimeMillis() - timePressed) >= 40) {
-                                        board.move(1, matchstone);
-                                        notall = false;
-                                        repaint();
-                                        notall = true;
-                                        timePressed = System.currentTimeMillis();
-                                    }
-                                    break;
-
-                                case Constants.KEY_DOWN_ARROW:
-                                    if ((System.currentTimeMillis() - timePressed) >= 10) {
-                                        board.move(0, matchstone);
-                                        notall = false;
-                                        repaint();
-                                        notall = true;
-                                        timePressed = System.currentTimeMillis();
-                                    }
-                                    break;
-                                case Constants.KEY_UP_ARROW:
-                                    matchstone.Rotate();
-                                    notall = false;
-                                    repaint();
-                                    notall = true;
-                                    break;
-                                case Constants.KEY_SOFTKEY2:
-                                    //System.out.println("Oyun durduruldu!");
-                                    //SaveGame();
-                                    GameMode = 2;
-                                    break;
-                                default:
-                                    Key = true;
-                                    KeyMove = 0;
-                                    break;
-                            }
-                            break;
-                            //Game is going on but flashing cause of Letting it down!
-                        case 1:
-                            //Need to implement this againg UBASAK
-                            /*
-                    drawAll(g);
-                    if(flashing%2==0){
-                        for(int i=0; i<10; i++){
-                            for(int j=0; j<20; j++){
-                                if(TBTest[i][j]==1){
-                                    g.setClip(0,0,BOARD_WIDTH,BOARD_HEIGHT);
-                                    g.drawImage(back,i*6+startX,j*6+startY);
-                                }               
-                            }
-                        }
-                    } */
-                            if (++flashing == 10) {
-                                GameMode = 0;
-                                board.LetItDown();
-                                falling = false;
-                                board.CheckIsFull();
-                            }
-
-                            break;
-                        case 2:
-                            switch (keyCode) {
-                                case Constants.KEY_DOWN_ARROW:
-                                case Constants.KEY_UP_ARROW:
-                                    menu.navigate(keyCode);
-                                    break;
-
-                                case Constants.KEY_SOFTKEY1:
-                                    if (menu.menuPosition == 0) {
-                                        System.out.println("Continue");
-                                        GAMEOVER = false;
-                                        GameMode = 0;
-                                    } else if (menu.menuPosition == 1) {
-                                        board.Score();
-                                        GAMEOVER = true;
-                                        GameMode = 2;
-                                        //Continue=0;
-                                    } else if (menu.menuPosition == 3) {
-                                        System.exit(0);
-                                        //we are exiting but there are some flows, check this. UBASAK
-                                        GameMode = 3;
-                                        menu.menuPosition = 0;
-                                    }
-                            }
-                            menu.draw(1,true,0);
-
-                            break;
-
-                        case 3:
-                            switch (keyCode) {
-                                case Constants.KEY_DOWN_ARROW:
-                                case Constants.KEY_UP_ARROW:
-                                    menu.navigate(keyCode);
-                                    break;
-                                case Constants.KEY_SOFTKEY1:
-                                    System.exit(0);
-                                    break;
-                            }
-                            menu.draw(2,true,0);
-                            break;
-                    }
+                    activeGameActions(keyCode);
                 } else { //GAMEOVER = true
-                    switch (GameMode) {
-                        //SPLASH
-                        case 1:
-                            GameMode = 2;
-                            break;
-
-                            //Main menu
-                        case 2:
-                            switch (keyCode) {
-                                case Constants.KEY_DOWN_ARROW:
-                                case Constants.KEY_UP_ARROW:
-                                case Constants.KEY_LEFT_ARROW:
-                                case Constants.KEY_RIGHT_ARROW:
-                                    menu.navigate(keyCode);
-                                    break;
-                                case Constants.KEY_SOFTKEY1:
-                                    int menuValue = menu.getValue(Continue, menu.menuPosition);
-                                    if (menuValue == 5) { //EXIT
-                                        System.exit(0);
-                                    } else if (menuValue == 3) { //HELP
-
-                                    } else if (menuValue == 0) { //NEW ONE
-                                        System.out.println("Starts");
-                                        NewGame();
-                                    } else if (menuValue == 1) { //CONTINUE
-                                        matchstone = new MatchStone(); //UBASAK, why do we need to create???
-                                        store.SaveLoad(false);
-                                        System.out.println("Loaded");
-                                        GAMEOVER = false;
-                                        GameMode = 0;
-                                        Continue = 0;
-                                    } else if (menuValue == 2) { //FINISH
-                                    } else if (menuValue == 4) { //ABOUT
-                                    }
-                                    /*                          if(menuPosition == 0){ 
-                                                                    System.out.println("Starts");
-                                                                    NewGame();
-                                                                }
-                                                                else if(menuPosition == 4){
-                                                                    //myMidlet.notifyDestroyed();
-                                                                    try {
-                                                                        myMidlet.destroyApp(true);
-                                                                    } catch (MIDletStateChangeException e1) {
-                                                                        e1.printStackTrace();
-                                                                    }
-                                                                }
-                                    */
-                                    break;
-                            }
-                               if(Continue==1){
-                                    menu.draw(1,false,0);
-                                }
-                                else{
-                                    menu.draw(0,false,0);
-                                }
-                            break;
-
-                        case 0:
-                            //g.drawString("GAME OVER",0,60);
-                            //System.out.println("Case 0");
-                            if (Constants.KEY_SOFTKEY1 == keyCode) {
-                                System.out.println("Game Over");
-                                GameMode = 2;
-                            }
-                            break;
-                    }
+                    passiveGameActions(keyCode);
                 }
             }
             /* UBASAK - For J2ME applications I was using keyreleased and keyrepeated events, check if they are necessary.
@@ -412,6 +248,153 @@ public class Game extends JPanel implements Runnable {
                 } */
     } //TAdapter
 
+    private void activeGameActions(String keyCode) {
+        if( GameMode == 0) {
+            switch (keyCode) {
+                case Constants.KEY_LEFT_ARROW:
+                    board.move(-1, matchstone);
+                    break;
+                case Constants.KEY_RIGHT_ARROW:
+                    board.move(1, matchstone);
+                    break;
+                case Constants.KEY_DOWN_ARROW:
+                    board.move(0, matchstone);
+                    break;
+                case Constants.KEY_UP_ARROW:
+                    matchstone.Rotate();
+                    break;
+                case Constants.KEY_SOFTKEY2:
+                    //System.out.println("Oyun durduruldu!");
+                    //SaveGame();
+                    GameMode = 2;
+                    break;
+                default:
+                    Key = true;
+                    KeyMove = 0;
+                    break;
+            }
+        } else if (GameMode == 1) {
+            //Game is going on but flashing cause of Letting it down!
+            //Need to implement this againg UBASAK
+            /*
+            drawAll(g);
+            if(flashing%2==0){
+                for(int i=0; i<10; i++){
+                    for(int j=0; j<20; j++){
+                        if(TBTest[i][j]==1){
+                            g.setClip(0,0,BOARD_WIDTH,BOARD_HEIGHT);
+                            g.drawImage(back,i*6+startX,j*6+startY);
+                        }               
+                    }
+                }
+            } */
+            if (++flashing == 10) {
+                GameMode = 0;
+                board.LetItDown();
+                falling = false;
+                board.CheckIsFull();
+            }
+        } else if (GameMode == 2) {
+            switch (keyCode) {
+                case Constants.KEY_DOWN_ARROW:
+                case Constants.KEY_UP_ARROW:
+                    menu.navigate(keyCode);
+                    break;
+                case Constants.KEY_SOFTKEY1:
+                    if (menu.menuPosition == 0) {
+                        System.out.println("Continue");
+                        GAMEOVER = false;
+                        GameMode = 0;
+                    } else if (menu.menuPosition == 1) {
+                        board.Score();
+                        GAMEOVER = true;
+                        GameMode = 2;
+                        //Continue=0;
+                    } else if (menu.menuPosition == 3) {
+                        System.exit(0);
+                        //we are exiting but there are some flows, check this. UBASAK
+                        GameMode = 3;
+                        menu.menuPosition = 0;
+                    }
+            }
+            menu.draw(1,true,0);
+        } else if(GameMode == 3) {
+            switch (keyCode) {
+                case Constants.KEY_DOWN_ARROW:
+                case Constants.KEY_UP_ARROW:
+                    menu.navigate(keyCode);
+                    break;
+                case Constants.KEY_SOFTKEY1:
+                    System.exit(0);
+                    break;
+            }
+            menu.draw(2,true,0);
+        }
+    }
+
+    private void passiveGameActions(String keyCode) {
+        if( GameMode == 0) {
+            //g.drawString("GAME OVER",0,60);
+            //System.out.println("Case 0");
+            if (Constants.KEY_SOFTKEY1 == keyCode) {
+                System.out.println("Game Over");
+                GameMode = 2;
+            }
+        } else if( GameMode == 1) {
+            //SPLASH
+            GameMode = 2;
+        } else if (GameMode == 2) {
+            //Main menu
+                switch (keyCode) {
+                    case Constants.KEY_DOWN_ARROW:
+                    case Constants.KEY_UP_ARROW:
+                    case Constants.KEY_LEFT_ARROW:
+                    case Constants.KEY_RIGHT_ARROW:
+                        menu.navigate(keyCode);
+                        break;
+                    case Constants.KEY_SOFTKEY1:
+                        int menuValue = menu.getValue(Continue, menu.menuPosition);
+                        if (menuValue == 5) { //EXIT
+                            System.exit(0);
+                        } else if (menuValue == 3) { //HELP
+
+                        } else if (menuValue == 0) { //NEW ONE
+                            System.out.println("Starts");
+                            NewGame();
+                        } else if (menuValue == 1) { //CONTINUE
+                            matchstone = new MatchStone(); //UBASAK, why do we need to create???
+                            store.SaveLoad(false);
+                            System.out.println("Loaded");
+                            GAMEOVER = false;
+                            GameMode = 0;
+                            Continue = 0;
+                        } else if (menuValue == 2) { //FINISH
+                        } else if (menuValue == 4) { //ABOUT
+                        }
+                        /*                          if(menuPosition == 0){ 
+                                                        System.out.println("Starts");
+                                                        NewGame();
+                                                    }
+                                                    else if(menuPosition == 4){
+                                                        //myMidlet.notifyDestroyed();
+                                                        try {
+                                                            myMidlet.destroyApp(true);
+                                                        } catch (MIDletStateChangeException e1) {
+                                                            e1.printStackTrace();
+                                                        }
+                                                    }
+                        */
+                        break;
+                }
+                if(Continue==1){
+                    menu.draw(1,false,0);
+                }
+                else{
+                    menu.draw(0,false,0);
+                }
+            }
+    }
+
     private void myPaint(Graphics g, boolean all) {
         g.setFont(font);
         if (all) paintBoard(g);
@@ -424,22 +407,8 @@ public class Game extends JPanel implements Runnable {
     private void paintBoard(Graphics g) {
         board.drawAll(g);
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
-        if (!GAMEOVER) {
-            board.CheckGameOver(matchstone);
-            if(matchstone != null)
-                matchstone.DrawShape(g, Board.balls, Constants.CELL_SIZE);
-            if (System.currentTimeMillis() - lastDraw >= Constants.speed) {
-                if (board.Check(matchstone)) {
-                    board.Update(matchstone);
-                    //matchstone = null;
-                    matchstone = new MatchStone();
-                    //Key = false;
-                    board.CheckIsFull();
-                } else {
-                    matchstone.CellY++;
-                }
-                lastDraw = System.currentTimeMillis();
-            }
+        if( !GAMEOVER && matchstone != null ) {
+            matchstone.DrawShape(g, Board.balls, Constants.CELL_SIZE);
         }
     }
 
