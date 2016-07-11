@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 
 public class MatchStone {
 
+    private final int BALL_IMAGE_SIZE = 6;
+    private final int MATCH_STONE_LENGTH = 3;
     public int CellX;
     public int CellY;
 
@@ -14,32 +16,42 @@ public class MatchStone {
     public MatchStone() {
         CellX = 4;
         CellY = 0;
-        type = new int[3];
-        for (int i = 0; i < 3; i++) {
-            type[i] = Math.abs(Utilities.random.nextInt()) % Game.Level + 1;
+        this.initTypes();
+    }
+
+    private void initTypes() {
+        type = new int[MATCH_STONE_LENGTH];
+        for (int i = 0; i < MATCH_STONE_LENGTH; i++) {
+            type[i] = getRandomColor();
         }
     }
 
+    private int getRandomColor() {
+        return getRandom() % Game.Level + 1;
+    }
+
+    private int getRandom() {
+        return Math.abs( Utilities.random.nextInt() );
+    }
+
     private BufferedImage getSprite(BufferedImage image, int index) {
-        //System.out.println("Index is " + index);
-        int image_size = 6;
-        return image.getSubimage((index-1)*image_size,0,image_size, image_size);
+        return image.getSubimage( (index-1) * BALL_IMAGE_SIZE, 0, BALL_IMAGE_SIZE, BALL_IMAGE_SIZE);
     }
 
     public void DrawShape(Graphics g, BufferedImage image, int cell_size) {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < MATCH_STONE_LENGTH; i++) {
             if (this.CellY + i >= 0) {
                 BufferedImage imagex = getSprite(image, this.type[i]);
-                g.drawImage(imagex, Constants.startX+this.CellX*cell_size, Constants.startY + (this.CellY + i) * cell_size, cell_size, cell_size, null);
+                g.drawImage(imagex, Constants.startX + this.CellX * cell_size, Constants.startY + (this.CellY + i) * cell_size, cell_size, cell_size, null);
             }
-            //else System.out.println("Dont draw "+(this.CellY+i));
         }
     }
 
     public void Rotate() {
-        int temp[] = new int[3];
-        for (int i = 0; i < 3; i++)
-            temp[i] = this.type[(i + 1) % 3];
-        System.arraycopy(temp, 0, this.type, 0, 3);
+        int temp[] = new int[MATCH_STONE_LENGTH];
+        for (int i = 0; i < MATCH_STONE_LENGTH; i++) {
+            temp[i] = this.type[(i + 1) % MATCH_STONE_LENGTH];
+        }
+        System.arraycopy(temp, 0, this.type, 0, MATCH_STONE_LENGTH);
     }
 }

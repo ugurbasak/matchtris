@@ -54,10 +54,6 @@ public class Board {
         TetrisBoard = new int[10][20];
         TBTest = new int[10][20];
 
-        //To create a new stone
-        //matchstone = new MatchStone();
-        //do not create here
-
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 20; j++) {
                 TetrisBoard[i][j] = 0;
@@ -66,12 +62,6 @@ public class Board {
         }
 
         this.loading();
-    }
-
-    private BufferedImage getSprite(BufferedImage image, int index) {
-        //System.out.println("Index is " + index);
-        int image_size = 6;
-        return image.getSubimage((index-1)*image_size,0,image_size, image_size);
     }
 
     public void drawAll(Graphics g) {
@@ -85,6 +75,12 @@ public class Board {
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         g.setColor(Color.gray);
         g.fillRect(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
+    }
+
+    private BufferedImage getSprite(BufferedImage image, int index) {
+        //System.out.println("Index is " + index);
+        int image_size = 6;
+        return image.getSubimage((index-1)*image_size,0,image_size, image_size);
     }
 
     private void drawCells(Graphics g) {
@@ -116,10 +112,6 @@ public class Board {
     }
 
     private void drawScore(Graphics g) {
-        /*g.setColor(0x000000);
-        g.drawString("Puan",80,5);
-        g.drawString(""+puan,80,15);
-        */
         g.drawImage(imgPuan, (10 + 2) * Constants.CELL_SIZE , 5, null);
         DrawString(g, Game.puan, (10 + 2) * Constants.CELL_SIZE, 30);
     }
@@ -131,12 +123,13 @@ public class Board {
         this.checkLeftHorizontal();
 
         if (Game.falling) {
-            /*          //System.out.println("----------------");
-                        LetItDown();
-                        //System.out.println("After LetItDown");
-                        falling=false;
-                        CheckIsFull();
-                        //System.out.println("After 2nd CheckIsFull");
+            /*
+            //System.out.println("----------------");
+            LetItDown();
+            //System.out.println("After LetItDown");
+            falling=false;
+            CheckIsFull();
+            //System.out.println("After 2nd CheckIsFull");
             */
             //Commenting for now UBASAK
             if (false) {
@@ -147,8 +140,9 @@ public class Board {
                 Game.falling = false;
                 CheckIsFull();
             }
-        } else
+        } else {
             return false;
+        }
         return true;
     }
 
@@ -309,33 +303,35 @@ public class Board {
                         } else break;
                     }
                     //System.out.println("1st end");
-                    /*                  int k=0;
-                                        while(true){
-                                            System.out.println("in here");
-                                            if(TetrisBoard[i][j-NoOfMatch-k]==0)
-                                                break;
-                                            k++;
-                                        }
-                                        System.out.println("k = "+k);
+                    /*
+                    int k=0;
+                    while(true){
+                        System.out.println("in here");
+                        if(TetrisBoard[i][j-NoOfMatch-k]==0)
+                            break;
+                        k++;
+                    }
+                    System.out.println("k = "+k);
                     */
-                    /*                  //int l=k;
-                                        //int l=0;
-                                        //while(l!=k){
-                                            //TetrisBoard[i][j-l] = TetrisBoard[i][j-NoOfMatch-l];
-                                            //l++;
-                                        //}
-                                        for(int l=0; l<k+1; l++){
-                                            TetrisBoard[i][j-l] = TetrisBoard[i][j-NoOfMatch-l];
-                                        }
-                                        //for(int p=0; p<NoOfMatch; p++){
-                                        //  TetrisBoard[i][j-NoOfMatch-k-p-1]=0;
-                                        //}
-                                        System.out.println("last control");
-                                        for(int m=0; m<NoOfMatch; m++){
-                                            System.out.println(j-NoOfMatch-k+m-1);
-                                            TetrisBoard[i][j-NoOfMatch-k+m-1]=0;
-                                        }
-                                        System.out.println("last control finished");
+                    /*
+                    //int l=k;
+                    //int l=0;
+                    //while(l!=k){
+                        //TetrisBoard[i][j-l] = TetrisBoard[i][j-NoOfMatch-l];
+                        //l++;
+                    //}
+                    for(int l=0; l<k+1; l++){
+                        TetrisBoard[i][j-l] = TetrisBoard[i][j-NoOfMatch-l];
+                    }
+                    //for(int p=0; p<NoOfMatch; p++){
+                    //  TetrisBoard[i][j-NoOfMatch-k-p-1]=0;
+                    //}
+                    System.out.println("last control");
+                    for(int m=0; m<NoOfMatch; m++){
+                        System.out.println(j-NoOfMatch-k+m-1);
+                        TetrisBoard[i][j-NoOfMatch-k+m-1]=0;
+                    }
+                    System.out.println("last control finished");
                     */
                     //System.out.println("NoOfMatch "+NoOfMatch+" j= "+j);
                     int m = 0;
@@ -377,13 +373,13 @@ public class Board {
         11O22
          534
         5 3 4
-     */
+        */
         /*
-            11044
-            22033
-             576
-            5 7 6
-      */
+        11044
+        22033
+         576
+        5 7 6
+        */
     }
 
     public void loading() {
@@ -463,17 +459,18 @@ public class Board {
                 Game.GAMEOVER = true;
                 matchstone.CellY = -3 + i;
                 Update(matchstone);
-                /*              if(CheckIsFull()){
-                                    System.out.println("here and not finished");
-                                    GAMEOVER=false;
-                                    matchstone = new MatchStone();
-                                    //Key = false;
-                                    CheckIsFull();
-                                }
-                                else{
-                                    System.out.println("GAME OVER!");
-                                    Score();
-                                }
+                /*
+                if(CheckIsFull()){
+                    System.out.println("here and not finished");
+                    GAMEOVER=false;
+                    matchstone = new MatchStone();
+                    //Key = false;
+                    CheckIsFull();
+                }
+                else{
+                    System.out.println("GAME OVER!");
+                    Score();
+                }
                 */
                 System.out.println("GAME OVER!");
                 Score();
@@ -539,9 +536,9 @@ public class Board {
                 if (increase) matchstone.CellX--;
             } else if (direction == 0) {
                 if (this.Check(matchstone)) {
-                    //              Update();
-                    //              matchstone = new MatchStone();
-                    //              CheckIsFull();
+                    //Update();
+                    //matchstone = new MatchStone();
+                    //CheckIsFull();
                     if (!Game.GAMEOVER) {
                         this.CheckGameOver(matchstone);
                     }
