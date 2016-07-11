@@ -31,8 +31,33 @@ import javax.swing.JPanel;
 import java.awt.image.BufferedImage;
 
 public class Game extends JPanel implements Runnable {
-
+    //Common properties
     private Thread animator;
+
+    //Instance properties
+    private Font font;
+    private Board board = null;
+    private Menu menu = null;
+    private Store store = null;
+    public MatchStone matchstone = null;
+    private int[] HighScores;
+
+    //Game state properties --needs heavy refactoring. UBASAK
+    public static int GameMode = 2;
+    private long lastDraw;
+    private boolean notall = true;
+    public boolean Key = false;
+    private String action = Constants.KEY_LEFT_ARROW;
+    private int KeyMove = 0;
+    public static boolean falling = false;
+    private int falling_times = 0;
+    public static boolean GAMEOVER = true;
+    public static int Level = 6;
+    public static int puan = 0;
+    private long timePressed = 0; //about when a key is pressed or released
+    public static int flashing = 0;
+    public static int Continue = 0;
+    private int transCell = 0; //When the game ends using this propert board will be covered with a transparent layer
 
     public void initGame() {
         System.out.println("Game::InitGame");
@@ -47,22 +72,19 @@ public class Game extends JPanel implements Runnable {
         int condition = JComponent.WHEN_IN_FOCUSED_WINDOW;
         InputMap inputMap = getInputMap(condition);
 
-        //Use the constants KEY_KEFT_ARROW ...
-        String vkLeft = "VK_LEFT";
-        String vkRight = "VK_RIGHT";
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), vkLeft);
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), vkRight);
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "VK_UP");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "VK_DOWN");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "VK_ENTER");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "VK_SPACE");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), Constants.KEY_LEFT_ARROW);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), Constants.KEY_RIGHT_ARROW);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), Constants.KEY_UP_ARROW);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), Constants.KEY_DOWN_ARROW);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), Constants.KEY_SOFTKEY1);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), Constants.KEY_SOFTKEY2);
 
-        actionMap.put(vkLeft, new KeyAction(vkLeft));
-        actionMap.put(vkRight, new KeyAction(vkRight));
-        actionMap.put("VK_UP", new KeyAction("VK_UP"));
-        actionMap.put("VK_DOWN", new KeyAction("VK_DOWN"));
-        actionMap.put("VK_ENTER", new KeyAction("VK_ENTER"));
-        actionMap.put("VK_SPACE", new KeyAction("VK_SPACE"));
+        actionMap.put(Constants.KEY_LEFT_ARROW, new KeyAction(Constants.KEY_LEFT_ARROW));
+        actionMap.put(Constants.KEY_RIGHT_ARROW, new KeyAction(Constants.KEY_RIGHT_ARROW));
+        actionMap.put(Constants.KEY_UP_ARROW, new KeyAction(Constants.KEY_UP_ARROW));
+        actionMap.put(Constants.KEY_DOWN_ARROW, new KeyAction(Constants.KEY_DOWN_ARROW));
+        actionMap.put(Constants.KEY_SOFTKEY1, new KeyAction(Constants.KEY_SOFTKEY1));
+        actionMap.put(Constants.KEY_SOFTKEY2, new KeyAction(Constants.KEY_SOFTKEY2));
     }
 
     @
@@ -115,55 +137,15 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
-
-    private Font font;
-    public static int GameMode = 2;
-    private Board board = null;
-    private Menu menu = null;
-    private Store store = null;
-    public MatchStone matchstone = null;
-
-    private long lastDraw;
-    private boolean notall = true;
-
-    public boolean Key = false;
-    private String action = "VK_LEFT";
-    private int KeyMove = 0;
-    public static boolean falling = false;
-    private int falling_times = 0;
-
-    public static boolean GAMEOVER = true;
-    public static int Level = 6;
-    public static int puan = 0;
-
-    private long timePressed = 0; //about when a key is pressed or released
-    public static int flashing = 0;
-
-    private int[] HighScores;
-    public static int Continue = 0;
-
-    //private RecordStore rsMatchTris = null;
-
-    private int transCell = 0; //Oyun bitince ekran? transparan yapacak
-
     public Game() {
         initGame();
         font = new Font("TimesRoman", Font.PLAIN, 20);
         board = new Board();
         menu = new Menu();
         store = new Store();
-        //Initialization
         HighScores = new int[10];
         lastDraw = System.currentTimeMillis();
         store.loadScores();
-
-
-
-        //if(dg==null) {
-        //  dg=DirectUtils.getDirectGraphics(g);
-        //}
-
-        //g.setFont(font); UBASAK
     }
 
     /* This code looks like old or new keypress code 
