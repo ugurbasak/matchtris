@@ -75,9 +75,19 @@ public class Board {
     }
 
     public void drawAll(Graphics g) {
+        this.drawBackground(g);
+        this.drawCells(g);
+        this.drawBorder(g);
+        this.drawScore(g);
+    }
+
+    private void drawBackground(Graphics g) {
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         g.setColor(Color.gray);
         g.fillRect(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
+    }
+
+    private void drawCells(Graphics g) {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 20; j++) {
                 int x_v = Constants.startX + i * Constants.CELL_SIZE;
@@ -91,6 +101,9 @@ public class Board {
                 }
             }
         }
+    }
+
+    private void drawBorder(Graphics g) {
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         for (int i = 0; i < Constants.BOARD_WIDTH / 4; i++) {
             g.drawImage(border, Constants.BOARD_WIDTH / 2, i * 4, null);
@@ -100,6 +113,9 @@ public class Board {
             g.drawImage(border, i * 4, Constants.BOARD_WIDTH - 4 , null);
             g.drawImage(border, i * 4, 0, null);
         }
+    }
+
+    private void drawScore(Graphics g) {
         /*g.setColor(0x000000);
         g.drawString("Puan",80,5);
         g.drawString(""+puan,80,15);
@@ -109,6 +125,34 @@ public class Board {
     }
 
     public boolean CheckIsFull() {
+        this.checkToUp();
+        this.checkToRight();
+        this.checkRightHorizontal();
+        this.checkLeftHorizontal();
+
+        if (Game.falling) {
+            /*          //System.out.println("----------------");
+                        LetItDown();
+                        //System.out.println("After LetItDown");
+                        falling=false;
+                        CheckIsFull();
+                        //System.out.println("After 2nd CheckIsFull");
+            */
+            //Commenting for now UBASAK
+            if (false) {
+                Game.GameMode = 1;
+                Game.flashing = 0;
+            } else {
+                LetItDown();
+                Game.falling = false;
+                CheckIsFull();
+            }
+        } else
+            return false;
+        return true;
+    }
+
+    private void checkToUp() {
         ///////////////////////////////
         /// x
         /// x
@@ -141,6 +185,9 @@ public class Board {
                 }
             }
         }
+    }
+
+    private void checkToRight() {
         ///////////////////////////////////////////////////
         ///////////////////////////////
         /// 
@@ -174,6 +221,9 @@ public class Board {
                 }
             }
         }
+    }
+
+    private void checkRightHorizontal() {
         ///////////////////////////////////////////////////
         ///////////////////////////////
         ///   x
@@ -206,6 +256,9 @@ public class Board {
                 }
             }
         }
+    }
+
+    private void checkLeftHorizontal() {
         ///////////////////////////////////////////////////
         ///////////////////////////////
         /// x
@@ -240,29 +293,9 @@ public class Board {
                 }
             }
         }
-        if (Game.falling) {
-            /*          //System.out.println("----------------");
-                        LetItDown();
-                        //System.out.println("After LetItDown");
-                        falling=false;
-                        CheckIsFull();
-                        //System.out.println("After 2nd CheckIsFull");
-            */
-            //Commenting for now UBASAK
-            if (false) {
-                Game.GameMode = 1;
-                Game.flashing = 0;
-            } else {
-                LetItDown();
-                Game.falling = false;
-                CheckIsFull();
-            }
-        } else
-            return false;
-        return true;
     }
 
-    public   void LetItDown() {
+    public void LetItDown() {
         for (int i = 0; i < 10; i++) {
             for (int j = 19; j >= 0; j--) {
                 if (TBTest[i][j] == 1) {
@@ -358,21 +391,21 @@ public class Board {
         if(this.balls == null)
             this.balls = LoadImage("images/balls.png");
         if(this.back == null)
-        this.back = LoadImage("images/back.png");
+            this.back = LoadImage("images/back.png");
         if(this.border == null)
-        this.border = LoadImage("images/border.png");
+            this.border = LoadImage("images/border.png");
         if(this.splash == null)
-        this.splash = LoadImage("images/splash.png");
+            this.splash = LoadImage("images/splash.png");
         if(this.menu == null)
-        this.menu = LoadImage("images/menu.png");
+            this.menu = LoadImage("images/menu.png");
         if(this.blue_fonts == null)
-        this.blue_fonts = LoadImage("images/blue_fonts.png");
+            this.blue_fonts = LoadImage("images/blue_fonts.png");
         if(this.black == null)
-        this.black = LoadImage("images/black.png");
+            this.black = LoadImage("images/black.png");
         if(this.blue == null)
-        this.blue = LoadImage("images/blue.png");
+            this.blue = LoadImage("images/blue.png");
         if(this.imgPuan == null)
-        this.imgPuan = LoadImage("images/puan.png");
+            this.imgPuan = LoadImage("images/puan.png");
     }
 
     public BufferedImage LoadImage(String str) {
@@ -520,5 +553,4 @@ public class Board {
             System.out.println("The error is at this point. What error?");
         }
     }
-
 }
