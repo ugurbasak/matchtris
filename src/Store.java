@@ -117,4 +117,9 @@ public class Store {
         timex = System.currentTimeMillis() - timex;
         System.out.println("timepassed in ms " + timex + " in sec " + (timex / 1000));
     }
+
+    public void setScore(int Level) {
+        //rsMatchTris = RecordStore.openRecordStore("MatchTris",true);
+        //SetRecord(rsMatchTris,LEVEL,Level);
+    }
 }

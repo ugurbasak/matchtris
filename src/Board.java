@@ -79,7 +79,6 @@ public class Board {
     }
 
     private BufferedImage getSprite(BufferedImage image, int index) {
-        //System.out.println("Index is " + index);
         int image_size = 6;
         return image.getSubimage((index-1)*image_size,0,image_size, image_size);
     }
@@ -136,7 +135,7 @@ public class Board {
         this.checkLeftHorizontal();
 
         if (Game.falling) {
-            // The first code block means flashing is active, can make this code parametric.:w
+            // The first code block means flashing is active, can make this code parametric.
             if (true) {
                 Game.GameMode = Constants.GAME_MODE_SPLASH;
                 Game.flashing = 0;

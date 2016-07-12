@@ -22,13 +22,6 @@ public class Constants {
         0x332C3A90
     };
 
-    //private final int NoOfRecords = 11; //toplma record store kay?d?
-    //1 tane contiue 20x10 tanede save game icin toplam 11 + 201 = 212tane
-    /*RecordStorelar?n final int isimleri olsun sonra degistirirsin istersen*/
-    //private final int NoOfRecords = 212; //toplma record store kay?d?
-    //MatchStone ile 215 oldu + 2 CellX ve CellY
-    //private final int NoOfRecords = 217; //toplma record store kay?d?
-    public static final int NoOfRecords = 218; //toplma record store kay?d?
     public static final int LEVEL = 1, HIGHSCORES = 2, ISCONTINUE = 12, LOADTHEM = 13;
 
     public static String[] strMenu = {
@@ -44,17 +37,13 @@ public class Constants {
     };
     
     public static int[][] MenuModes = {
-        {
-            0, 6, 3, 4, 5
-        }, {
-            1, 2, 3, 5
-        }, {
-            7, 8
-        }
+        { 0, 6, 3, 4, 5 },
+        { 1, 2, 3, 5 },
+        { 7, 8 }
     };
 
-   	//0 1 ... 9 rakamlar?n?n geni?likleri
-    //private final int[] WidthOfFonts = { 0,9,16,26,35,44,53,62,71,81,90 };
+   	//Sprite indexes of the numbers from 0 to 9
+    //This can be replaced by a fancy font instead of an image 
     public static final int[] WidthOfFonts = {
         0, 8, 12, 20, 28, 36, 44, 52, 60, 68, 76
     };

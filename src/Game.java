@@ -168,6 +168,7 @@ public class Game extends JPanel implements Runnable {
         store = new Store();
         HighScores = new int[10];
         lastDraw = System.currentTimeMillis();
+        timePressed = System.currentTimeMillis();
         store.loadScores();
     }
 
@@ -181,13 +182,10 @@ public class Game extends JPanel implements Runnable {
         public void actionPerformed(ActionEvent actionEvt) {
             String keyCode = actionEvt.getActionCommand();
             System.out.println("GameMode : " + GameMode + " GameOver : " + GAMEOVER + " MenuPosition : " + menu.menuPosition + " KeyCode : " + keyCode + " pressed");
-            if (!GAMEOVER) {
-                if (timePressed == 0)
-                    timePressed = System.currentTimeMillis();
-                activeGameActions(keyCode);
-            } else {
-                //GAMEOVER = true
+            if (GAMEOVER) {
                 passiveGameActions(keyCode);
+            } else {
+                activeGameActions(keyCode);
             }
         }
 
@@ -258,15 +256,7 @@ public class Game extends JPanel implements Runnable {
             //Game is going on but flashing cause of Letting it down!
             //Need to implement this againg UBASAK
         } else if (GameMode == Constants.GAME_MODE_MENU || GameMode == Constants.GAME_MODE_EXIT) {
-            switch (keyCode) {
-                case Constants.KEY_DOWN_ARROW:
-                case Constants.KEY_UP_ARROW:
-                    menu.navigate(keyCode);
-                    break;
-                case Constants.KEY_SOFTKEY1:
-                case Constants.KEY_SOFTKEY2:
-                    evaluateCommand();
-            }
+            this.handleMenuEvents(keyCode);
         }
     }
 
@@ -295,18 +285,22 @@ public class Game extends JPanel implements Runnable {
         } else if( GameMode == Constants.GAME_MODE_SPLASH) {
             GameMode = Constants.GAME_MODE_MENU;
         } else if (GameMode == Constants.GAME_MODE_MENU) {
-            switch (keyCode) {
-                case Constants.KEY_DOWN_ARROW:
-                case Constants.KEY_UP_ARROW:
-                case Constants.KEY_LEFT_ARROW:
-                case Constants.KEY_RIGHT_ARROW:
-                    menu.navigate(keyCode);
-                    break;
-                case Constants.KEY_SOFTKEY1:
-                case Constants.KEY_SOFTKEY2:
-                    evaluateCommand();
-                    break;
-            }
+            this.handleMenuEvents(keyCode);
+        }
+    }
+
+    private void handleMenuEvents(String keyCode) {
+        switch (keyCode) {
+            case Constants.KEY_DOWN_ARROW:
+            case Constants.KEY_UP_ARROW:
+            case Constants.KEY_LEFT_ARROW:
+            case Constants.KEY_RIGHT_ARROW:
+                menu.navigate(keyCode);
+                break;
+            case Constants.KEY_SOFTKEY1:
+            case Constants.KEY_SOFTKEY2:
+                evaluateCommand();
+                break;
         }
     }
 
