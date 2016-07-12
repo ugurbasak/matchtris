@@ -59,4 +59,8 @@ public class Constants {
         0, 8, 12, 20, 28, 36, 44, 52, 60, 68, 76
     };
 
+    public static final int GAME_MODE_STANDARD = 0;
+    public static final int GAME_MODE_SPLASH = 1;
+    public static final int GAME_MODE_MENU = 2;
+    public static final int GAME_MODE_EXIT = 3;
 }

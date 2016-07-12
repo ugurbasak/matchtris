@@ -138,7 +138,7 @@ public class Board {
         if (Game.falling) {
             // The first code block means flashing is active, can make this code parametric.:w
             if (true) {
-                Game.GameMode = 1;
+                Game.GameMode = Constants.GAME_MODE_SPLASH;
                 Game.flashing = 0;
             } else {
                 this.handleFalling();
@@ -537,7 +537,7 @@ public class Board {
     }
 
     public void move(int direction, MatchStone matchstone) {
-        if (!Game.GAMEOVER && Game.GameMode == 0) {
+        if (!Game.GAMEOVER && Game.GameMode == Constants.GAME_MODE_STANDARD) {
             boolean increase = true;
             if (direction == 1) {
                 for (int i = 0; i < 3; i++) {
@@ -563,7 +563,7 @@ public class Board {
                     matchstone.CellY++;
                 }
             }
-        } else if (Game.GameMode == 0 && Game.GAMEOVER == true) {
+        } else if (Game.GameMode == Constants.GAME_MODE_STANDARD && Game.GAMEOVER == true) {
             System.out.println("The error is at this point. What error?");
         }
     }
