@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.awt.geom.Ellipse2D;
 
 public class Board {
 
@@ -79,7 +80,7 @@ public class Board {
     }
 
     private BufferedImage getSprite(BufferedImage image, int index) {
-        int image_size = 6;
+        int image_size = Constants.CELL_SIZE;//6;
         return image.getSubimage((index-1)*image_size,0,image_size, image_size);
     }
 
@@ -393,7 +394,7 @@ public class Board {
     public void loading() {
         System.out.println("Initialization started");
         if(this.balls == null)
-            this.balls = LoadImage("images/balls.png");
+            this.balls = loadBalls(); //LoadImage("images/balls.png");
         if(this.back == null)
             this.back = LoadImage("images/back.png");
         if(this.border == null)
@@ -410,6 +411,24 @@ public class Board {
             this.blue = LoadImage("images/blue.png");
         if(this.imgPuan == null)
             this.imgPuan = LoadImage("images/puan.png");
+    }
+
+    private BufferedImage loadBalls() {
+        BufferedImage image = new BufferedImage(128, Constants.CELL_SIZE, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = (Graphics2D)image.getGraphics();
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
+        g.fillRect(0,0,128,Constants.CELL_SIZE);
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+        Color[] colors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.ORANGE, Color.MAGENTA, Color.CYAN, Color.BLACK };
+        for(int i=0; i<8; i++) {
+            int x = Constants.CELL_SIZE * i;
+            int y = 0;
+            int diameter = Constants.CELL_SIZE;
+            g.setColor(colors[i]);
+            Ellipse2D.Double circle = new Ellipse2D.Double(x, y, diameter, diameter);
+            g.fill(circle);
+        }
+        return image;
     }
 
     public BufferedImage LoadImage(String str) {

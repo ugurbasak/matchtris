@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 public class MatchStone {
 
-    private final int BALL_IMAGE_SIZE = 6;
+    private final int BALL_IMAGE_SIZE = Constants.CELL_SIZE; //if you want to use and image use its size like 6 for current image
     private final int MATCH_STONE_LENGTH = 3;
     public int CellX;
     public int CellY;
