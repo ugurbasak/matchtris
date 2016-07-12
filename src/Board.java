@@ -414,17 +414,21 @@ public class Board {
     }
 
     private BufferedImage loadBalls() {
-        BufferedImage image = new BufferedImage(128, Constants.CELL_SIZE, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(Constants.CELL_SIZE * Constants.MAX_BALLS, Constants.CELL_SIZE, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = (Graphics2D)image.getGraphics();
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
-        g.fillRect(0,0,128,Constants.CELL_SIZE);
+        g.fillRect(0,0,Constants.CELL_SIZE * Constants.MAX_BALLS, Constants.CELL_SIZE);
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
+        //If there will be more than 8 balls, this code must be modified
         Color[] colors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.ORANGE, Color.MAGENTA, Color.CYAN, Color.BLACK };
-        for(int i=0; i<8; i++) {
+        for(int i=0; i<Constants.MAX_BALLS; i++) {
             int x = Constants.CELL_SIZE * i;
             int y = 0;
             int diameter = Constants.CELL_SIZE;
-            g.setColor(colors[i]);
+            if(i < 8)
+                g.setColor(colors[i]);
+            else
+                g.setColor(new Color(  (float) (Utilities.random.nextFloat() / 2f + 0.5), (float) (Utilities.random.nextFloat() / 2f + 0.5), (float)(Utilities.random.nextFloat() / 2f + 0.5)) );
             Ellipse2D.Double circle = new Ellipse2D.Double(x, y, diameter, diameter);
             g.fill(circle);
         }

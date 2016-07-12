@@ -66,14 +66,14 @@ public class Menu {
             case Constants.KEY_LEFT_ARROW:
                 if (this.getCommand() == 6 ) {
                     Game.Level--;
-                    if (Game.Level <= 4) Game.Level = 8;
+                    if (Game.Level <= 4) Game.Level = Constants.MAX_BALLS;
                 }
                 //store.setScore(Game.Level);
                 break;
             case Constants.KEY_RIGHT_ARROW:
                 if (this.getCommand() == 6 ) {
                     Game.Level++;
-                    if (Game.Level >= 9) Game.Level = 5;
+                    if (Game.Level > Constants.MAX_BALLS) Game.Level = 5;
                 }
                 //store.setScore(Game.Level);
                 break;
