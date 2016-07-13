@@ -181,48 +181,13 @@ public class Game extends JPanel implements Runnable {
         Override
         public void actionPerformed(ActionEvent actionEvt) {
             String keyCode = actionEvt.getActionCommand();
-            System.out.println("GameMode : " + GameMode + " GameOver : " + GAMEOVER + " MenuPosition : " + menu.menuPosition + " KeyCode : " + keyCode + " pressed");
+            System.out.println("GameMode : " + GameMode + " GameOver : " + GAMEOVER + " KeyCode : " + keyCode + " pressed");
             if (GAMEOVER) {
                 passiveGameActions(keyCode);
             } else {
                 activeGameActions(keyCode);
             }
         }
-
-        /* UBASAK - For J2ME applications I was using keyreleased and keyrepeated events, check if they are necessary.
-        @Override
-        protected void keyReleased(int keyCode) {
-            //System.out.println("Key "+Key);
-            //System.out.println("Key released "+getGameAction(keyCode));
-            timePressed = 0;
-            Key = false;
-            KeyMove = 0;
-        }
-
-        @Override
-        protected void keyRepeated(int keyCode) {
-            //int action = getGameAction(keyCode);
-            action = keyCode;
-            if(!Key){
-                Key=true;
-                System.out.println("false olmus");
-            }
-            if(!GAMEOVER){
-                //if((System.currentTimeMillis() - timePressed)>=50)
-                //  timePressed = System.currentTimeMillis();
-                if(GameMode == 0){
-                    //switch (action) {
-                    switch (keyCode) {
-                    case Constants.KEY_UP_ARROW:
-                        keyPressed(keyCode);
-                    break;
-                    default:
-                        break;
-                    }
-                }
-            }
-        }
-        */
     } //TAdapter
 
     private void activeGameActions(String keyCode) {
@@ -310,7 +275,6 @@ public class Game extends JPanel implements Runnable {
             System.out.println("Starts");
             NewGame();
         } else if (menuValue == 1) { //CONTINUE
-            matchstone = new MatchStone(); //UBASAK, why do we need to create???
             store.SaveLoad(false);
             System.out.println("Loaded");
             GAMEOVER = false;
@@ -333,7 +297,7 @@ public class Game extends JPanel implements Runnable {
             } else {
                 //we are exiting but there are some flows, check this. UBASAK
                 GameMode = Constants.GAME_MODE_EXIT;
-                menu.menuPosition = 0;
+                //menu.menuPosition = 0;
             }
         } else if(menuValue == 6) { //LEVE
 
@@ -361,7 +325,6 @@ public class Game extends JPanel implements Runnable {
     }
 
     private void paintBoard(Graphics g) {
-        g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         if( !GAMEOVER && matchstone != null ) {
             matchstone.DrawShape(g, Board.balls, Constants.CELL_SIZE);
         }

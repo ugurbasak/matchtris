@@ -43,12 +43,6 @@ public class Constants {
         { 7, 8 }
     };
 
-   	//Sprite indexes of the numbers from 0 to 9
-    //This can be replaced by a fancy font instead of an image 
-    public static final int[] WidthOfFonts = {
-        0, 8, 12, 20, 28, 36, 44, 52, 60, 68, 76
-    };
-
     public static final int GAME_MODE_STANDARD = 0;
     public static final int GAME_MODE_SPLASH = 1;
     public static final int GAME_MODE_MENU = 2;

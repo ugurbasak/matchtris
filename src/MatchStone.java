@@ -8,15 +8,19 @@ public class MatchStone {
 
     private final int BALL_IMAGE_SIZE = Constants.CELL_SIZE; //if you want to use and image use its size like 6 for current image
     private final int MATCH_STONE_LENGTH = 3;
+    
     public int CellX;
     public int CellY;
-
     public int[] type;
 
     public MatchStone() {
+        this.initCoordinates();
+        this.initTypes();
+    }
+
+    private void initCoordinates() {
         CellX = 4;
         CellY = 0;
-        this.initTypes();
     }
 
     private void initTypes() {

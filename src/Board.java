@@ -45,11 +45,6 @@ public class Board {
     public static BufferedImage border = null;
     public static BufferedImage back = null;
     public static BufferedImage splash = null;
-    public static BufferedImage menu = null;
-    public static BufferedImage blue_fonts = null;
-    public static BufferedImage black = null;
-    public static BufferedImage blue = null;
-    public static BufferedImage imgPuan = null;
 
     public Board() {
         //Initialization
@@ -77,7 +72,8 @@ public class Board {
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         g.setColor(Color.gray);
         g.fillRect(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
-    }
+        //g.drawImage(this.splash, 0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT, null);
+     }
 
     private BufferedImage getSprite(BufferedImage image, int index) {
         int image_size = Constants.CELL_SIZE;//6;
@@ -89,14 +85,17 @@ public class Board {
             for (int j = 0; j < 20; j++) {
                 int x_v = Constants.startX + i * Constants.CELL_SIZE;
                 int y_v = Constants.startY + j * Constants.CELL_SIZE;
-                if (TetrisBoard[i][j] != 0 && isValidCellForRendering(i, j) ) {
-                    BufferedImage image = getSprite(balls, TetrisBoard[i][j]);
-                    g.drawImage(image, x_v, y_v, Constants.CELL_SIZE, Constants.CELL_SIZE, null);
-                } else {
-                    g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
-                    g.drawImage(back, x_v, y_v, Constants.CELL_SIZE, Constants.CELL_SIZE, null);
-                }
+                BufferedImage image = this.getCellImage(i, j);
+                g.drawImage(image, x_v, y_v, Constants.CELL_SIZE, Constants.CELL_SIZE, null);
             }
+        }
+    }
+
+    private BufferedImage getCellImage(int i, int j) {
+        if (TetrisBoard[i][j] != 0 && isValidCellForRendering(i, j) ) {
+            return getSprite(balls, TetrisBoard[i][j]);
+        } else {
+            return this.back;
         }
     }
 
@@ -125,8 +124,10 @@ public class Board {
     }
 
     private void drawScore(Graphics g) {
-        g.drawImage(imgPuan, (10 + 2) * Constants.CELL_SIZE , 5, null);
-        DrawString(g, Game.puan, (10 + 2) * Constants.CELL_SIZE, 30);
+        g.setColor(Color.black);
+        g.drawString("Points", (10 + 2) * Constants.CELL_SIZE, 50);
+        g.setColor(Color.blue);
+        g.drawString(Integer.toString(Game.puan), (10 + 2) * Constants.CELL_SIZE, 70);
     }
 
     public boolean CheckIsFull() {
@@ -393,24 +394,14 @@ public class Board {
 
     public void loading() {
         System.out.println("Initialization started");
+        if(this.back == null)
+            this.back = loadBackground(); //LoadImage("images/back.png");
         if(this.balls == null)
             this.balls = loadBalls(); //LoadImage("images/balls.png");
-        if(this.back == null)
-            this.back = LoadImage("images/back.png");
         if(this.border == null)
             this.border = LoadImage("images/border.png");
         if(this.splash == null)
             this.splash = LoadImage("images/splash.png");
-        if(this.menu == null)
-            this.menu = LoadImage("images/menu.png");
-        if(this.blue_fonts == null)
-            this.blue_fonts = LoadImage("images/blue_fonts.png");
-        if(this.black == null)
-            this.black = LoadImage("images/black.png");
-        if(this.blue == null)
-            this.blue = LoadImage("images/blue.png");
-        if(this.imgPuan == null)
-            this.imgPuan = LoadImage("images/puan.png");
     }
 
     private BufferedImage loadBalls() {
@@ -435,6 +426,18 @@ public class Board {
         return image;
     }
 
+    public BufferedImage loadBackground() {
+        BufferedImage image = new BufferedImage(Constants.CELL_SIZE, Constants.CELL_SIZE, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = (Graphics2D)image.getGraphics();
+        int step = 256 / Constants.CELL_SIZE;
+        for(int i=0; i<Constants.CELL_SIZE; i++) {
+            int val = step * i;
+            g.setColor(new Color(val, val, val, 128));
+            g.drawLine(0, i, Constants.CELL_SIZE, i); 
+        }
+        return image;
+    }
+
     public BufferedImage LoadImage(String str) {
         BufferedImage img = null;
         try {
@@ -444,22 +447,6 @@ public class Board {
         }
         System.out.println("Load Image for " + str);
         return img; //UBASAK find a way to return a real image
-    }
-
-    private void DrawString(Graphics g, int number, int x, int y) {
-        String no = "" + number;
-        int[] ints = new int[no.length()];
-        int[] distance = new int[ints.length + 1];
-        distance[0] = 0;
-        for (int i = 0; i < no.length(); i++)
-            ints[i] = Integer.parseInt(no.substring(i, i + 1));
-        for (int i = 0; i < ints.length; i++)
-            distance[i + 1] = distance[i] + Constants.WidthOfFonts[ints[i] + 1] - Constants.WidthOfFonts[ints[i]];
-        for (int i = 0; i < no.length(); i++) {
-            g.setClip(x + distance[i] + i, y, distance[i + 1] - distance[i], 20);
-            g.drawImage(blue, x + distance[i] + i - Constants.WidthOfFonts[ints[i]], y, null);
-        }
-        g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
     }
 
     public boolean Check(MatchStone matchstone) {

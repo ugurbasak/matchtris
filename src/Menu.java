@@ -8,19 +8,23 @@ import java.util.Random;
 
 public class Menu {
 
-    public int currentmode = 0;
-    public int menuPosition = 0;
-    public int trans = 0;
+    private int currentmode = 0;
+    private int menuPosition = 0;
+    private int trans = 0;
 
     public Menu() { 
     }
 
-    public void openMenu(int menumode) {
-        currentmode = menumode;
+    private void setMode(int mode) {
+        if( this.currentmode == mode) {
+            return;
+        }
+        this.currentmode = mode;
+        this.menuPosition = 0;
     }
 
     public void draw(Graphics g, int mode) {
-        this.currentmode = mode;
+        this.setMode(mode);
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         int x = Constants.BOARD_WIDTH  / 2 - 50;
         int y = Constants.BOARD_HEIGHT / 2 - 10;
