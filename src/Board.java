@@ -92,8 +92,8 @@ public class Board {
     }
 
     private BufferedImage getCellImage(int i, int j) {
-        if (TetrisBoard[i][j] != 0 && isValidCellForRendering(i, j) ) {
-            return getSprite(balls, TetrisBoard[i][j]);
+        if (this.isFilled(i, j) && isValidCellForRendering(i, j) ) {
+            return getSprite(balls, this.getValue(i, j));
         } else {
             return this.back;
         }
@@ -165,15 +165,15 @@ public class Board {
         //System.out.println("Checking to up");
         for (int i = 0; i < 10; i++) {
             for (int j = 19; j >= 0; j--) {
-                //if(TetrisBoard[i][j]!=0 && TBTest[i][j]==0){
-                if (TetrisBoard[i][j] != 0) {
-                    int color = TetrisBoard[i][j];
+                //if(this.getValue(i, j)!=0 && TBTest[i][j]==0){
+                if (this.isFilled(i, j)) {
+                    int color = this.getValue(i, j);
                     int NoOfMatch = 1;
                     while (true) {
                         if (j - NoOfMatch >= 0) {
                             //if(j-NoOfMatch<0) System.out.println("j-NoOfMatch<0");
                             //if(i<0)             System.out.println("i<0");
-                            if (TetrisBoard[i][j] == TetrisBoard[i][j - NoOfMatch])
+                            if (this.getValue(i, j) == this.getValue(i, j, 0, -1 * NoOfMatch))
                                 NoOfMatch++;
                             else
                                 break;
@@ -201,15 +201,15 @@ public class Board {
         //System.out.println("Checking to right");
         for (int i = 0; i < 10; i++) {
             for (int j = 19; j >= 0; j--) {
-                if (TetrisBoard[i][j] != 0) {
-                    int color = TetrisBoard[i][j];
+                if (this.isFilled(i, j)) {
+                    int color = this.getValue(i, j);
                     int NoOfMatch = 1;
                     while (true) {
                         if (i + NoOfMatch < 10) {
                             //if(j<0) System.out.println("j<0");
                             //if(i+NoOfMatch<0)  System.out.println("i+NoOfMatch<0");
 
-                            if (TetrisBoard[i][j] == TetrisBoard[i + NoOfMatch][j])
+                            if (this.getValue(i, j) == this.getValue(i, j, NoOfMatch, 0))
                                 NoOfMatch++;
                             else
                                 break;
@@ -237,15 +237,15 @@ public class Board {
         //System.out.println("Checking to right horizontal");
         for (int i = 0; i < 10; i++) {
             for (int j = 19; j >= 0; j--) {
-                if (TetrisBoard[i][j] != 0) {
-                    int color = TetrisBoard[i][j];
+                if (this.isFilled(i, j)) {
+                    int color = this.getValue(i, j);
                     int NoOfMatch = 1;
                     while (true) {
                         if (i + NoOfMatch < 10 && j - NoOfMatch >= 0) {
                             //if(j-NoOfMatch<0) System.out.println("j-NoOfMatch");
                             //if(i+NoOfMatch>9)  System.out.println("i+NoOfMatch>9");
 
-                            if (TetrisBoard[i][j] == TetrisBoard[i + NoOfMatch][j - NoOfMatch])
+                            if (this.getValue(i, j) == this.getValue(i, j, NoOfMatch, -1 * NoOfMatch))
                                 NoOfMatch++;
                             else break;
                         } else break;
@@ -272,15 +272,15 @@ public class Board {
         //System.out.println("Checking to left horizontal");
         for (int i = 0; i < 10; i++) {
             for (int j = 19; j >= 0; j--) {
-                if (TetrisBoard[i][j] != 0) {
-                    int color = TetrisBoard[i][j];
+                if (this.isFilled(i, j)) {
+                    int color = this.getValue(i, j);
                     int NoOfMatch = 1;
                     while (true) {
                         if (i - NoOfMatch >= 0 && j - NoOfMatch >= 0) {
                             //if(j-NoOfMatch<0) System.out.println("j-NoOfMatch");
                             //if(i-NoOfMatch<0)  System.out.println("i+NoOfMatch<0");
 
-                            if (TetrisBoard[i][j] == TetrisBoard[i - NoOfMatch][j - NoOfMatch])
+                            if (this.getValue(i, j) == this.getValue(i, j, -1 * NoOfMatch, -1 * NoOfMatch))
                                 NoOfMatch++;
                             else break;
                         } else break;
@@ -352,9 +352,9 @@ public class Board {
                         if ((j - m - NoOfMatch) < 0)
                             TetrisBoard[i][j - m] = 0;
                         else
-                            TetrisBoard[i][j - m] = TetrisBoard[i][j - NoOfMatch - m];
+                            TetrisBoard[i][j - m] = this.getValue(i, j, 0, -1 * (NoOfMatch + m));
                         if (j - m - 1 >= 0) {
-                            if (TetrisBoard[i][j - m - 1] == 0 || (j - m) == 0) break;
+                            if ( !this.isFilled(i, j, 0, -1 * (m + 1) )  || (j - m) == 0) break;
                         }
                         //yeni eklenti
                         //if((k+NoOfMatch-1)==m) break;
@@ -451,7 +451,7 @@ public class Board {
 
     public boolean Check(MatchStone matchstone) {
         //if(matchstone.CellX<0 || matchstone.CellX>9) System.out.println("x de hata "+matchstone.CellX);
-        if (matchstone.CellY + 2 == 19 || TetrisBoard[matchstone.CellX][matchstone.CellY + 3] != 0)
+        if (matchstone.CellY + 2 == 19 || this.isFilled(matchstone, 0, 3))
             return true;
         return false;
     }
@@ -474,11 +474,11 @@ public class Board {
     public void CheckGameOver(MatchStone matchstone) {
         synchronized(TetrisBoard) {
             int i = -1;
-            if (TetrisBoard[4][0] != 0) {
+            if (this.isFilled(4,0)) {
                 i = 0;
-            } else if (TetrisBoard[4][1] != 0) {
+            } else if (this.isFilled(4,1)) {
                 i = 1;
-            } else if (TetrisBoard[4][2] != 0) {
+            } else if (this.isFilled(4,2)) {
                 i = 2;
             }
             if (i != -1) {
@@ -545,18 +545,45 @@ public class Board {
         }
     }
 
+    private int getValue(int x, int y, int dx, int dy) {
+        return this.TetrisBoard[x + dx][y + dy];
+    }
+
+    private int getValue(int x, int y) {
+        return this.getValue(x, y, 0, 0);
+    }
+    // x  : current x value
+    // y  : current y value
+    // dx : expected diff x value
+    // dy : expected fiff y value
+    private boolean isFilled(int x, int y, int dx, int dy) {
+        return this.getValue(x, y, dx, dy) != 0;
+    }
+
+    private boolean isFilled(int x, int y) {
+        return this.isFilled(x, y, 0, 0);
+    }
+
+    private boolean isFilled(MatchStone matchStone, int dx, int dy) {
+        return this.isFilled(matchStone.CellX, matchStone.CellY, dx, dy);
+    }
+
+    private boolean isFilled(MatchStone matchStone) {
+        return this.isFilled(matchStone, 0, 0);
+    }
+
     public void move(int direction, MatchStone matchstone) {
         if (!Game.GAMEOVER && Game.GameMode == Constants.GAME_MODE_STANDARD) {
             boolean increase = true;
             if (direction == 1) {
                 for (int i = 0; i < 3; i++) {
-                    if (matchstone.CellX == 9 || TetrisBoard[matchstone.CellX + 1][matchstone.CellY + i] != 0)
+                    if (matchstone.CellX == 9 || this.isFilled(matchstone, 1, i) )
                         increase = false;
                 }
                 if (increase) matchstone.CellX++;
             } else if (direction == -1) {
                 for (int i = 0; i < 3; i++) {
-                    if (matchstone.CellX == 0 || TetrisBoard[matchstone.CellX - 1][matchstone.CellY + i] != 0)
+                    if (matchstone.CellX == 0 || this.isFilled(matchstone, -1, i) )
                         increase = false;
                 }
                 if (increase) matchstone.CellX--;
