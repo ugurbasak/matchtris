@@ -468,35 +468,57 @@ public class Board {
         return this.isFilled(matchStone, 0, 0);
     }
 
+    private boolean checkRight(MatchStone matchstone, int i) {
+        if (matchstone.CellX == 9 || this.isFilled(matchstone, 1, i) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkLeft(MatchStone matchstone, int i) {
+        if (matchstone.CellX == 0 || this.isFilled(matchstone, -1, i) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void move(int direction, MatchStone matchstone) {
-        if (!Game.GAMEOVER && Game.GameMode == Constants.GAME_MODE_STANDARD) {
-            boolean increase = true;
-            if (direction == 1) {
-                for (int i = 0; i < 3; i++) {
-                    if (matchstone.CellX == 9 || this.isFilled(matchstone, 1, i) )
-                        increase = false;
-                }
-                if (increase) matchstone.CellX++;
-            } else if (direction == -1) {
-                for (int i = 0; i < 3; i++) {
-                    if (matchstone.CellX == 0 || this.isFilled(matchstone, -1, i) )
-                        increase = false;
-                }
-                if (increase) matchstone.CellX--;
-            } else if (direction == 0) {
-                if (this.Check(matchstone)) {
-                    //Update();
-                    //matchstone = new MatchStone();
-                    //CheckIsFull();
-                    if (!Game.GAMEOVER) {
-                        this.CheckGameOver(matchstone);
-                    }
-                } else {
-                    matchstone.CellY++;
+        if (Game.GameMode == Constants.GAME_MODE_STANDARD && Game.GAMEOVER == true) {
+            System.out.println("The error is at this point. What error?");
+        }
+
+        if (Game.GAMEOVER || Game.GameMode != Constants.GAME_MODE_STANDARD) {
+            return;
+        }
+
+        boolean increase = true;
+        if (direction == 1) {
+            for (int i = 0; i < 3; i++) {
+                if( this.checkRight(matchstone, i) ) {
+                    increase = false;
                 }
             }
-        } else if (Game.GameMode == Constants.GAME_MODE_STANDARD && Game.GAMEOVER == true) {
-            System.out.println("The error is at this point. What error?");
+            if (increase) matchstone.CellX++;
+        } else if (direction == -1) {
+            for (int i = 0; i < 3; i++) {
+                if (this.checkLeft(matchstone, i)) {
+                    increase = false;
+                }
+            }
+            if (increase) matchstone.CellX--;
+        } else if (direction == 0) {
+            if (this.Check(matchstone)) {
+                //Update();
+                //matchstone = new MatchStone();
+                //CheckIsFull();
+                if (!Game.GAMEOVER) {
+                    this.CheckGameOver(matchstone);
+                }
+            } else {
+                matchstone.CellY++;
+            }
         }
     }
 
