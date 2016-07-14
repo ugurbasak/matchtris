@@ -1,39 +1,12 @@
-import java.util.Random;
-
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.applet.Applet;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.Random;
-import java.awt.Image;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import java.awt.image.BufferedImage;
-import java.io.FileReader;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import java.io.File;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.Random;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class Board {
 
@@ -131,10 +104,7 @@ public class Board {
     }
 
     public boolean CheckIsFull() {
-        this.checkToUp();
-        this.checkToRight();
-        this.checkRightHorizontal();
-        this.checkLeftHorizontal();
+        this.check();
 
         if (Game.falling) {
             // The first code block means flashing is active, can make this code parametric.
@@ -156,146 +126,84 @@ public class Board {
         CheckIsFull();
     }
 
-    private void checkToUp() {
-        ///////////////////////////////
-        /// x
-        /// x
-        /// x
-        /// control //////////////////
-        //System.out.println("Checking to up");
+    private void check() {
         for (int i = 0; i < 10; i++) {
             for (int j = 19; j >= 0; j--) {
-                //if(this.getValue(i, j)!=0 && TBTest[i][j]==0){
                 if (this.isFilled(i, j)) {
                     int color = this.getValue(i, j);
-                    int NoOfMatch = 1;
-                    while (true) {
-                        if (j - NoOfMatch >= 0) {
-                            //if(j-NoOfMatch<0) System.out.println("j-NoOfMatch<0");
-                            //if(i<0)             System.out.println("i<0");
-                            if (this.getValue(i, j) == this.getValue(i, j, 0, -1 * NoOfMatch))
-                                NoOfMatch++;
-                            else
-                                break;
-                        } else break;
-                    }
-                    if (NoOfMatch >= 3) {
-                        //System.out.println("will check up "+NoOfMatch);
-                        for (int m = 0; m < NoOfMatch; m++)
-                            TBTest[i][j - m] = 1;
-                        Game.falling = true;
-                        //System.out.println("yukari");                         
-                    }
+                    this.checkToUp(i, j, color);
+                    this.checkToRight(i, j, color);
+                    this.checkToRightHorizontal(i, j, color);
+                    this.checkToLeftHorizontal(i, j, color);
                 }
             }
         }
     }
 
-    private void checkToRight() {
-        ///////////////////////////////////////////////////
-        ///////////////////////////////
-        /// 
-        /// x x x
-        /// 
-        /// control //////////////////
-        //System.out.println("Checking to right");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 19; j >= 0; j--) {
-                if (this.isFilled(i, j)) {
-                    int color = this.getValue(i, j);
-                    int NoOfMatch = 1;
-                    while (true) {
-                        if (i + NoOfMatch < 10) {
-                            //if(j<0) System.out.println("j<0");
-                            //if(i+NoOfMatch<0)  System.out.println("i+NoOfMatch<0");
-
-                            if (this.getValue(i, j) == this.getValue(i, j, NoOfMatch, 0))
-                                NoOfMatch++;
-                            else
-                                break;
-                        } else break;
-                    }
-                    if (NoOfMatch >= 3) {
-                        //System.out.println("will check right "+NoOfMatch);
-                        for (int m = 0; m < NoOfMatch; m++)
-                            TBTest[i + m][j] = 1;
-                        Game.falling = true;
-                        //System.out.println("yana");
-                    }
-                }
-            }
+    private void checkToUp(int i, int j, int color) {
+        int NoOfMatch = 1;
+        while (true) {
+            if (j - NoOfMatch >= 0) {
+                if (this.getValue(i, j) == this.getValue(i, j, 0, -1 * NoOfMatch))
+                    NoOfMatch++;
+                else
+                    break;
+            } else break;
+        }
+        if (NoOfMatch >= 3) {
+            for (int m = 0; m < NoOfMatch; m++)
+                TBTest[i][j - m] = 1;
+            Game.falling = true;
         }
     }
 
-    private void checkRightHorizontal() {
-        ///////////////////////////////////////////////////
-        ///////////////////////////////
-        ///   x
-        ///  x  
-        /// x
-        /// control //////////////////
-        //System.out.println("Checking to right horizontal");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 19; j >= 0; j--) {
-                if (this.isFilled(i, j)) {
-                    int color = this.getValue(i, j);
-                    int NoOfMatch = 1;
-                    while (true) {
-                        if (i + NoOfMatch < 10 && j - NoOfMatch >= 0) {
-                            //if(j-NoOfMatch<0) System.out.println("j-NoOfMatch");
-                            //if(i+NoOfMatch>9)  System.out.println("i+NoOfMatch>9");
-
-                            if (this.getValue(i, j) == this.getValue(i, j, NoOfMatch, -1 * NoOfMatch))
-                                NoOfMatch++;
-                            else break;
-                        } else break;
-                    }
-                    if (NoOfMatch >= 3) {
-                        //System.out.println("will check right hor"+NoOfMatch);
-                        for (int m = 0; m < NoOfMatch; m++)
-                            TBTest[i + m][j - m] = 1;
-                        Game.falling = true;
-                        //System.out.println("sag capraz");
-                    }
-                }
-            }
+    private void checkToRight(int i, int j, int color) {
+        int NoOfMatch = 1;
+        while (true) {
+            if (i + NoOfMatch < 10) {
+                if (this.getValue(i, j) == this.getValue(i, j, NoOfMatch, 0))
+                    NoOfMatch++;
+                else
+                    break;
+            } else break;
+        }
+        if (NoOfMatch >= 3) {
+            for (int m = 0; m < NoOfMatch; m++)
+                TBTest[i + m][j] = 1;
+            Game.falling = true;
         }
     }
 
-    private void checkLeftHorizontal() {
-        ///////////////////////////////////////////////////
-        ///////////////////////////////
-        /// x
-        ///  x  
-        ///   x
-        /// control //////////////////
-        //System.out.println("Checking to left horizontal");
-        for (int i = 0; i < 10; i++) {
-            for (int j = 19; j >= 0; j--) {
-                if (this.isFilled(i, j)) {
-                    int color = this.getValue(i, j);
-                    int NoOfMatch = 1;
-                    while (true) {
-                        if (i - NoOfMatch >= 0 && j - NoOfMatch >= 0) {
-                            //if(j-NoOfMatch<0) System.out.println("j-NoOfMatch");
-                            //if(i-NoOfMatch<0)  System.out.println("i+NoOfMatch<0");
+    private void checkToRightHorizontal(int i, int j, int color) {
+        int NoOfMatch = 1;
+        while (true) {
+            if (i + NoOfMatch < 10 && j - NoOfMatch >= 0) {
+                if (this.getValue(i, j) == this.getValue(i, j, NoOfMatch, -1 * NoOfMatch))
+                    NoOfMatch++;
+                else break;
+            } else break;
+        }
+        if (NoOfMatch >= 3) {
+            for (int m = 0; m < NoOfMatch; m++)
+                TBTest[i + m][j - m] = 1;
+            Game.falling = true;
+        }
+    }
 
-                            if (this.getValue(i, j) == this.getValue(i, j, -1 * NoOfMatch, -1 * NoOfMatch))
-                                NoOfMatch++;
-                            else break;
-                        } else break;
-                    }
-                    if (NoOfMatch >= 3) {
-                        //System.out.println("will check left hor"+NoOfMatch);
-                        for (int m = 0; m < NoOfMatch; m++) {
-                            //System.out.println("i-m="+(i-m)+" j-m="+(j-m));
-                            TBTest[i - m][j - m] = 1;
-                        }
-                        Game.falling = true;
-                        //System.out.println("sol capraz");
-                    }
-                }
+    private void checkToLeftHorizontal(int i, int j, int color) {
+        int NoOfMatch = 1;
+        while (true) {
+            if (i - NoOfMatch >= 0 && j - NoOfMatch >= 0) {
+                if (this.getValue(i, j) == this.getValue(i, j, -1 * NoOfMatch, -1 * NoOfMatch))
+                    NoOfMatch++;
+                else break;
+            } else break;
+        }
+        if (NoOfMatch >= 3) {
+            for (int m = 0; m < NoOfMatch; m++) {
+                TBTest[i - m][j - m] = 1;
             }
+            Game.falling = true;
         }
     }
 
