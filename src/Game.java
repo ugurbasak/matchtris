@@ -59,7 +59,7 @@ public class Game extends JPanel implements Runnable {
     private int transCell = 0; //When the game ends using this propert board will be covered with a transparent layer
 
     public void initGame() {
-        System.out.println("Game::InitGame");
+        Logger.debug("Game::InitGame");
         setKeyBindings();
         setBackground(Color.BLACK);
         setPreferredSize(new Dimension(Constants.B_WIDTH, Constants.B_HEIGHT));
@@ -154,7 +154,7 @@ public class Game extends JPanel implements Runnable {
             try {
                 Thread.sleep(sleep);
             } catch (InterruptedException e) {
-                System.out.println("Interrupted: " + e.getMessage());
+                Logger.error("Interrupted: " + e.getMessage());
             }
 
             beforeTime = System.currentTimeMillis();
@@ -183,7 +183,7 @@ public class Game extends JPanel implements Runnable {
         Override
         public void actionPerformed(ActionEvent actionEvt) {
             String keyCode = actionEvt.getActionCommand();
-            System.out.println("GameMode : " + GameMode + " GameOver : " + GAMEOVER + " KeyCode : " + keyCode + " pressed");
+            Logger.debug("GameMode : " + GameMode + " GameOver : " + GAMEOVER + " KeyCode : " + keyCode + " pressed");
             if (GAMEOVER) {
                 passiveGameActions(keyCode);
             } else {
@@ -230,9 +230,9 @@ public class Game extends JPanel implements Runnable {
     private void passiveGameActions(String keyCode) {
         if( GameMode == Constants.GAME_MODE_STANDARD) {
             //g.drawString("GAME OVER",0,60);
-            System.out.println("Case 0");
+            Logger.debug("Case 0");
             if (Constants.KEY_SOFTKEY1 == keyCode) {
-                System.out.println("Game Over");
+                Logger.debug("Game Over");
                 GameMode = Constants.GAME_MODE_MENU;
             }
             //GameOver now it is time to draw the transparant part UBASAK
@@ -274,11 +274,11 @@ public class Game extends JPanel implements Runnable {
     private void evaluateCommand() {
         int menuValue = menu.getCommand();
         if (menuValue == 0) { //NEW ONE
-            System.out.println("Starts");
+            Logger.debug("Starts");
             NewGame();
         } else if (menuValue == 1) { //CONTINUE
             store.SaveLoad(false);
-            System.out.println("Loaded");
+            Logger.debug("Loaded");
             GAMEOVER = false;
             GameMode = Constants.GAME_MODE_STANDARD;
             Continue = 0;
@@ -345,9 +345,9 @@ public class Game extends JPanel implements Runnable {
         puan = 0;
         matchstone = new MatchStone();
         if (matchstone.CellY != 0) {
-            System.out.println("WARNING : cell_y is not ZERO");
+            Logger.warn("WARNING : cell_y is not ZERO");
         }
-        matchstone.CellY = 0;
+        //matchstone.CellY = 0;
         transCell = 0;
     }
 }

@@ -20,7 +20,7 @@ public class MatchStone {
 
     private void initCoordinates() {
         CellX = 4;
-        CellY = 0;
+        CellY = -3;//0;
     }
 
     private void initTypes() {

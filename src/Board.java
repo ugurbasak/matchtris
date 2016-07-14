@@ -146,7 +146,7 @@ public class Board {
             int matches = this.getMatches(i, j, dx, dy, color);
             this.setMatches(i, j, dx, dy, matches);
         } catch (ArrayIndexOutOfBoundsException ex) {
-            System.out.println(i + " - " + j + " " + ex);
+            Logger.error(i + " - " + j + " " + ex);
             throw ex;
         }
     }
@@ -191,11 +191,11 @@ public class Board {
                 if (TBTest[i][j] == 1) {
                     int matches = 1;
                     while (true) {
-                        if (j - matches >= 0) {
-                            if (TBTest[i][j] == TBTest[i][j - matches])
-                                matches++;
-                            else break;
-                        } else break;
+                        if (j - matches >= 0 && TBTest[i][j] == TBTest[i][j - matches] ) {
+                            matches++;
+                        } else {
+                            break;
+                        }
                     }
                     //System.out.println("1st end");
                     /*
@@ -278,8 +278,8 @@ public class Board {
     }
 
     public boolean Check(MatchStone matchstone) {
-        //if(matchstone.CellX<0 || matchstone.CellX>9) System.out.println("x de hata "+matchstone.CellX);
-        if (matchstone.CellY + 2 == 19 || this.isFilled(matchstone, 0, 3))
+        //if(matchstone.CellX<0 || matchstone.CellX>9) System.out.println("There is an error at matchstone.x = "+matchstone.CellX);
+        if (matchstone.CellY + 3 == 20 || this.isFilled(matchstone, 0, 3))
             return true;
         return false;
     }
@@ -301,18 +301,10 @@ public class Board {
 
     public void CheckGameOver(MatchStone matchstone) {
         synchronized(TetrisBoard) {
-            int i = -1;
-            if (this.isFilled(4,0)) {
-                i = 0;
-            } else if (this.isFilled(4,1)) {
-                i = 1;
-            } else if (this.isFilled(4,2)) {
-                i = 2;
-            }
-            if (i != -1) {
+            if (this.isFilled(4, 0)) {
                 Game.GAMEOVER = true;
-                matchstone.CellY = -3 + i;
-                Update(matchstone);
+                Logger.debug("GAME OVER!");
+                Score();
                 /*
                 if(CheckIsFull()){
                     System.out.println("here and not finished");
@@ -326,8 +318,6 @@ public class Board {
                     Score();
                 }
                 */
-                System.out.println("GAME OVER!");
-                Score();
             }
         }
     }
@@ -369,7 +359,7 @@ public class Board {
                     e.printStackTrace();
                 }
             } */
-            System.out.println("GameMode =" + Game.GameMode + " GAMEOVER =" + Game.GAMEOVER);
+            Logger.debug("GameMode =" + Game.GameMode + " GAMEOVER =" + Game.GAMEOVER);
         }
     }
 
@@ -418,10 +408,15 @@ public class Board {
 
     public void move(int direction, MatchStone matchstone) {
         if (Game.GameMode == Constants.GAME_MODE_STANDARD && Game.GAMEOVER == true) {
-            System.out.println("The error is at this point. What error?");
+            Logger.error("The error is at this point. What error?");
         }
 
         if (Game.GAMEOVER || Game.GameMode != Constants.GAME_MODE_STANDARD) {
+            return;
+        }
+
+        //If it is still fully or partly iin the invisible area discard move action
+        if( matchstone.CellY < 0 ) {
             return;
         }
 

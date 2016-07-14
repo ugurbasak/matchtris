@@ -115,7 +115,7 @@ public class Store {
             e.printStackTrace();
         } */
         timex = System.currentTimeMillis() - timex;
-        System.out.println("timepassed in ms " + timex + " in sec " + (timex / 1000));
+        Logger.debug("timepassed in ms " + timex + " in sec " + (timex / 1000));
     }
 
     public void setScore(int Level) {

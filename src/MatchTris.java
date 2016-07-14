@@ -49,6 +49,9 @@ public class MatchTris extends JFrame {
     }
 
     public static void main(String[] args) {
+        for(int i=0; i<args.length; i++) {
+            Constants.LOG_LEVEL = Integer.parseInt(args[i]);
+        }
 
         EventQueue.invokeLater(new Runnable() {@
             Override

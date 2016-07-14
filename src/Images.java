@@ -25,7 +25,7 @@ public class Images {
     }
 
     public void init() {
-        System.out.println("Initialization started");
+        Logger.debug("Initialization started");
         if(this.back == null)
             this.back = loadBackground(); //LoadImage("images/back.png");
         if(this.balls == null)
@@ -77,7 +77,7 @@ public class Images {
         } catch (IOException e) {
             System.out.println(e.toString());
         }
-        System.out.println("Load Image for " + str);
+        Logger.debug("Load Image for " + str);
         return img; //UBASAK find a way to return a real image
     }
 }
