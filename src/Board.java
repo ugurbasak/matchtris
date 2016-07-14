@@ -140,83 +140,71 @@ public class Board {
         }
     }
 
-    private void checkToUp(int i, int j, int color) {
-        int NoOfMatch = 1;
-        while (true) {
-            if (j - NoOfMatch >= 0) {
-                if (this.getValue(i, j) == this.getValue(i, j, 0, -1 * NoOfMatch))
-                    NoOfMatch++;
-                else
-                    break;
-            } else break;
+    private boolean isInRange(int x, int y) {
+        if( x < 0 || x >=10) {
+            return false;
         }
-        if (NoOfMatch >= 3) {
-            for (int m = 0; m < NoOfMatch; m++)
-                TBTest[i][j - m] = 1;
-            Game.falling = true;
+
+        if( y < 0 || y >=20) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void check(int i, int j, int dx, int dy, int color) {
+        try {
+            int matches = this.getMatches(i, j, dx, dy, color);
+            this.setMatches(i, j, dx, dy, matches);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            System.out.println(i + " - " + j + " " + ex);
+            throw ex;
         }
     }
 
-    private void checkToRight(int i, int j, int color) {
-        int NoOfMatch = 1;
-        while (true) {
-            if (i + NoOfMatch < 10) {
-                if (this.getValue(i, j) == this.getValue(i, j, NoOfMatch, 0))
-                    NoOfMatch++;
-                else
-                    break;
-            } else break;
-        }
-        if (NoOfMatch >= 3) {
-            for (int m = 0; m < NoOfMatch; m++)
-                TBTest[i + m][j] = 1;
-            Game.falling = true;
-        }
-    }
-
-    private void checkToRightHorizontal(int i, int j, int color) {
-        int NoOfMatch = 1;
-        while (true) {
-            if (i + NoOfMatch < 10 && j - NoOfMatch >= 0) {
-                if (this.getValue(i, j) == this.getValue(i, j, NoOfMatch, -1 * NoOfMatch))
-                    NoOfMatch++;
-                else break;
-            } else break;
-        }
-        if (NoOfMatch >= 3) {
-            for (int m = 0; m < NoOfMatch; m++)
-                TBTest[i + m][j - m] = 1;
-            Game.falling = true;
-        }
-    }
-
-    private void checkToLeftHorizontal(int i, int j, int color) {
-        int NoOfMatch = 1;
-        while (true) {
-            if (i - NoOfMatch >= 0 && j - NoOfMatch >= 0) {
-                if (this.getValue(i, j) == this.getValue(i, j, -1 * NoOfMatch, -1 * NoOfMatch))
-                    NoOfMatch++;
-                else break;
-            } else break;
-        }
-        if (NoOfMatch >= 3) {
-            for (int m = 0; m < NoOfMatch; m++) {
-                TBTest[i - m][j - m] = 1;
+    private void setMatches(int i, int j, int dx, int dy, int matches) {
+        if (matches >= 3) {
+            for (int m = 0; m < matches; m++) {
+                TBTest[i + (dx * m)][j + (dy * m)] = 1;
             }
             Game.falling = true;
         }
+    }
+
+    private int getMatches(int i, int j, int dx, int dy, int color) {
+        int matches = 1;
+        while ( this.isInRange(i + (dx * matches), j + (dy * matches) ) &&
+                this.getValue(i, j) == this.getValue(i, j, dx * matches, dy * matches) ) {
+            matches++;
+        }
+        return matches;
+    }
+
+    private void checkToUp(int i, int j, int color) {
+        this.check(i, j, 0, -1, color);
+    }
+
+    private void checkToRight(int i, int j, int color) {
+        this.check(i, j, 1, 0, color);
+    }
+
+    private void checkToRightHorizontal(int i, int j, int color) {
+        this.check(i, j, 1, -1, color);
+    }
+
+    private void checkToLeftHorizontal(int i, int j, int color) {
+        this.check(i, j, -1, -1, color);
     }
 
     private void LetItDown() {
         for (int i = 0; i < 10; i++) {
             for (int j = 19; j >= 0; j--) {
                 if (TBTest[i][j] == 1) {
-                    int NoOfMatch = 1;
-                    //System.out.println("1st start");
+                    int matches = 1;
                     while (true) {
-                        if (j - NoOfMatch >= 0) {
-                            if (TBTest[i][j] == TBTest[i][j - NoOfMatch])
-                                NoOfMatch++;
+                        if (j - matches >= 0) {
+                            if (TBTest[i][j] == TBTest[i][j - matches])
+                                matches++;
                             else break;
                         } else break;
                     }
@@ -225,7 +213,7 @@ public class Board {
                     int k=0;
                     while(true){
                         System.out.println("in here");
-                        if(TetrisBoard[i][j-NoOfMatch-k]==0)
+                        if(TetrisBoard[i][j-matches-k]==0)
                             break;
                         k++;
                     }
@@ -235,47 +223,47 @@ public class Board {
                     //int l=k;
                     //int l=0;
                     //while(l!=k){
-                        //TetrisBoard[i][j-l] = TetrisBoard[i][j-NoOfMatch-l];
+                        //TetrisBoard[i][j-l] = TetrisBoard[i][j-matches-l];
                         //l++;
                     //}
                     for(int l=0; l<k+1; l++){
-                        TetrisBoard[i][j-l] = TetrisBoard[i][j-NoOfMatch-l];
+                        TetrisBoard[i][j-l] = TetrisBoard[i][j-matches-l];
                     }
-                    //for(int p=0; p<NoOfMatch; p++){
-                    //  TetrisBoard[i][j-NoOfMatch-k-p-1]=0;
+                    //for(int p=0; p<matches; p++){
+                    //  TetrisBoard[i][j-matches-k-p-1]=0;
                     //}
                     System.out.println("last control");
-                    for(int m=0; m<NoOfMatch; m++){
-                        System.out.println(j-NoOfMatch-k+m-1);
-                        TetrisBoard[i][j-NoOfMatch-k+m-1]=0;
+                    for(int m=0; m<matches; m++){
+                        System.out.println(j-matches-k+m-1);
+                        TetrisBoard[i][j-matches-k+m-1]=0;
                     }
                     System.out.println("last control finished");
                     */
-                    //System.out.println("NoOfMatch "+NoOfMatch+" j= "+j);
+                    //System.out.println("matches "+NoOfMatch+" j= "+j);
                     int m = 0;
-                    //if(NoOfMatch==3)
+                    //if(matches==3)
                     //System.out.println("2nd start");
                     while (true) {
                         if (j - m < 0) break;
-                        if ((j - m - NoOfMatch) < 0)
+                        if ((j - m - matches) < 0)
                             TetrisBoard[i][j - m] = 0;
                         else
-                            TetrisBoard[i][j - m] = this.getValue(i, j, 0, -1 * (NoOfMatch + m));
+                            TetrisBoard[i][j - m] = this.getValue(i, j, 0, -1 * (matches + m));
                         if (j - m - 1 >= 0) {
                             if ( !this.isFilled(i, j, 0, -1 * (m + 1) )  || (j - m) == 0) break;
                         }
                         //yeni eklenti
-                        //if((k+NoOfMatch-1)==m) break;
+                        //if((k+matches-1)==m) break;
                         /////////
                         m++;
                     }
                     //System.out.println("2nd end");
                     //System.out.println("m = "+m);
 
-                    for (int u = 0; u < NoOfMatch; u++)
+                    for (int u = 0; u < matches; u++)
                         TBTest[i][j - u] = 0;
-                    //puan+=((Level-2)*(Level-2))*NoOfMatch;
-                    Game.puan += ((Game.Level - 4) * (Game.Level - 4)) * NoOfMatch;
+                    //puan+=((Level-2)*(Level-2))*matches;
+                    Game.puan += ((Game.Level - 4) * (Game.Level - 4)) * matches;
                 }
             }
         }
