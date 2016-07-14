@@ -13,14 +13,10 @@ public class Board {
     public int[][] TetrisBoard;
     public int[][] TBTest;
     private boolean isFlashingEnabled = false;
-
-    public static BufferedImage balls = null;
-    public static BufferedImage border = null;
-    public static BufferedImage back = null;
-    public static BufferedImage splash = null;
-
-    public Board() {
+    private Images images = null;
+    public Board(Images images) {
         //Initialization
+        this.images = images;
         TetrisBoard = new int[10][20];
         TBTest = new int[10][20];
 
@@ -30,8 +26,6 @@ public class Board {
                 TBTest[i][j] = 0;
             }
         }
-
-        this.loading();
     }
 
     public void drawAll(Graphics g) {
@@ -48,11 +42,6 @@ public class Board {
         //g.drawImage(this.splash, 0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT, null);
      }
 
-    private BufferedImage getSprite(BufferedImage image, int index) {
-        int image_size = Constants.CELL_SIZE;//6;
-        return image.getSubimage((index-1)*image_size,0,image_size, image_size);
-    }
-
     private void drawCells(Graphics g) {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 20; j++) {
@@ -66,9 +55,9 @@ public class Board {
 
     private BufferedImage getCellImage(int i, int j) {
         if (this.isFilled(i, j) && isValidCellForRendering(i, j) ) {
-            return getSprite(balls, this.getValue(i, j));
+            return images.getSprite(images.balls, this.getValue(i, j));
         } else {
-            return this.back;
+            return images.back;
         }
     }
 
@@ -87,12 +76,12 @@ public class Board {
     private void drawBorder(Graphics g) {
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         for (int i = 0; i < Constants.BOARD_WIDTH / 4; i++) {
-            g.drawImage(border, Constants.BOARD_WIDTH / 2, i * 4, null);
-            g.drawImage(border, 0, i * 4, null);
+            g.drawImage(images.border, Constants.BOARD_WIDTH / 2, i * 4, null);
+            g.drawImage(images.border, 0, i * 4, null);
         }
         for (int i = 0; i < Constants.BOARD_WIDTH / 8; i++) {
-            g.drawImage(border, i * 4, Constants.BOARD_WIDTH - 4 , null);
-            g.drawImage(border, i * 4, 0, null);
+            g.drawImage(images.border, i * 4, Constants.BOARD_WIDTH - 4 , null);
+            g.drawImage(images.border, i * 4, 0, null);
         }
     }
 
@@ -286,63 +275,6 @@ public class Board {
          576
         5 7 6
         */
-    }
-
-    public void loading() {
-        System.out.println("Initialization started");
-        if(this.back == null)
-            this.back = loadBackground(); //LoadImage("images/back.png");
-        if(this.balls == null)
-            this.balls = loadBalls(); //LoadImage("images/balls.png");
-        if(this.border == null)
-            this.border = LoadImage("images/border.png");
-        if(this.splash == null)
-            this.splash = LoadImage("images/splash.png");
-    }
-
-    private BufferedImage loadBalls() {
-        BufferedImage image = new BufferedImage(Constants.CELL_SIZE * Constants.MAX_BALLS, Constants.CELL_SIZE, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = (Graphics2D)image.getGraphics();
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f));
-        g.fillRect(0,0,Constants.CELL_SIZE * Constants.MAX_BALLS, Constants.CELL_SIZE);
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));
-        //If there will be more than 8 balls, this code must be modified
-        Color[] colors = {Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN, Color.ORANGE, Color.MAGENTA, Color.CYAN, Color.BLACK };
-        for(int i=0; i<Constants.MAX_BALLS; i++) {
-            int x = Constants.CELL_SIZE * i;
-            int y = 0;
-            int diameter = Constants.CELL_SIZE;
-            if(i < 8)
-                g.setColor(colors[i]);
-            else
-                g.setColor(new Color(  (float) (Utilities.random.nextFloat() / 2f + 0.5), (float) (Utilities.random.nextFloat() / 2f + 0.5), (float)(Utilities.random.nextFloat() / 2f + 0.5)) );
-            Ellipse2D.Double circle = new Ellipse2D.Double(x, y, diameter, diameter);
-            g.fill(circle);
-        }
-        return image;
-    }
-
-    public BufferedImage loadBackground() {
-        BufferedImage image = new BufferedImage(Constants.CELL_SIZE, Constants.CELL_SIZE, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = (Graphics2D)image.getGraphics();
-        int step = 256 / Constants.CELL_SIZE;
-        for(int i=0; i<Constants.CELL_SIZE; i++) {
-            int val = step * i;
-            g.setColor(new Color(val, val, val, 128));
-            g.drawLine(0, i, Constants.CELL_SIZE, i); 
-        }
-        return image;
-    }
-
-    public BufferedImage LoadImage(String str) {
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(new File(str));
-        } catch (IOException e) {
-            System.out.println(e.toString());
-        }
-        System.out.println("Load Image for " + str);
-        return img; //UBASAK find a way to return a real image
     }
 
     public boolean Check(MatchStone matchstone) {

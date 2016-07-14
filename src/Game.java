@@ -39,6 +39,7 @@ public class Game extends JPanel implements Runnable {
     private Board board = null;
     private Menu menu = null;
     private Store store = null;
+    private Images images = null;
     public MatchStone matchstone = null;
     private int[] HighScores;
 
@@ -163,7 +164,8 @@ public class Game extends JPanel implements Runnable {
     public Game() {
         initGame();
         font = new Font("TimesRoman", Font.PLAIN, 20);
-        board = new Board();
+        images = new Images();
+        board = new Board(images);
         menu = new Menu();
         store = new Store();
         HighScores = new int[10];
@@ -326,19 +328,19 @@ public class Game extends JPanel implements Runnable {
 
     private void paintBoard(Graphics g) {
         if( !GAMEOVER && matchstone != null ) {
-            matchstone.DrawShape(g, Board.balls, Constants.CELL_SIZE);
+            matchstone.DrawShape(g, images.balls, Constants.CELL_SIZE);
         }
     }
 
     private void drawSplash(Graphics g) {
         if( GameMode != Constants.GAME_MODE_MENU  ) return;
-        g.drawImage(Board.splash,0,0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT,null);        
+        g.drawImage(images.splash,0,0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT,null);
     }
 
     private void NewGame() {
         GAMEOVER = false;
         GameMode = Constants.GAME_MODE_STANDARD;
-        board = new Board();
+        board = new Board(images);
         lastDraw = System.currentTimeMillis();
         puan = 0;
         matchstone = new MatchStone();
