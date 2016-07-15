@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 public class MatchStone {
 
     private final int BALL_IMAGE_SIZE = Constants.CELL_SIZE; //if you want to use and image use its size like 6 for current image
-    private final int MATCH_STONE_LENGTH = 3;
     
     public int CellX;
     public int CellY;
@@ -20,12 +19,12 @@ public class MatchStone {
 
     private void initCoordinates() {
         CellX = 4;
-        CellY = -3;//0;
+        CellY = -1 * Constants.BALL_LENGTH;//0;
     }
 
     private void initTypes() {
-        type = new int[MATCH_STONE_LENGTH];
-        for (int i = 0; i < MATCH_STONE_LENGTH; i++) {
+        type = new int[Constants.BALL_LENGTH];
+        for (int i = 0; i < Constants.BALL_LENGTH; i++) {
             type[i] = getRandomColor();
         }
     }
@@ -43,7 +42,7 @@ public class MatchStone {
     }
 
     public void DrawShape(Graphics g, BufferedImage image, int cell_size) {
-        for (int i = 0; i < MATCH_STONE_LENGTH; i++) {
+        for (int i = 0; i < Constants.BALL_LENGTH; i++) {
             if (this.CellY + i >= 0) {
                 BufferedImage imagex = getSprite(image, this.type[i]);
                 g.drawImage(imagex, Constants.startX + this.CellX * cell_size, Constants.startY + (this.CellY + i) * cell_size, cell_size, cell_size, null);
@@ -52,10 +51,10 @@ public class MatchStone {
     }
 
     public void Rotate() {
-        int temp[] = new int[MATCH_STONE_LENGTH];
-        for (int i = 0; i < MATCH_STONE_LENGTH; i++) {
-            temp[i] = this.type[(i + 1) % MATCH_STONE_LENGTH];
+        int temp[] = new int[Constants.BALL_LENGTH];
+        for (int i = 0; i < Constants.BALL_LENGTH; i++) {
+            temp[i] = this.type[(i + 1) % Constants.BALL_LENGTH];
         }
-        System.arraycopy(temp, 0, this.type, 0, MATCH_STONE_LENGTH);
+        System.arraycopy(temp, 0, this.type, 0, Constants.BALL_LENGTH);
     }
 }

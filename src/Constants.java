@@ -16,7 +16,7 @@ public class Constants {
     public static final int CELL_SIZE = 20; //These 3 constanst needs to be completely parametric, now it is only available for 6 pixel balls
     public static final int BOARD_WIDTH = CELL_SIZE * 20 + 8;
     public static final int BOARD_HEIGHT = CELL_SIZE * 20 + 8;
-
+    public static final int BALL_LENGTH = 3;
     public static final long speed = 400;
     public static int[] transparency = {
         0xcc2C3A90, 
