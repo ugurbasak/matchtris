@@ -1,33 +1,9 @@
-import java.util.Random;
-
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.Applet;
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.Random;
-import java.awt.Image;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 import java.awt.image.BufferedImage;
 
 public class Game extends JPanel implements Runnable {
@@ -47,15 +23,10 @@ public class Game extends JPanel implements Runnable {
     public static int GameMode = Constants.GAME_MODE_MENU;
     private long lastDraw;
     public static int flashing = 0;
-    public boolean Key = false;
-    private int KeyMove = 0;
     public static boolean falling = false;
-    private int falling_times = 0;
     public static boolean GAMEOVER = true;
     public static int Level = 6;
     public static int puan = 0;
-    private long timePressed = 0; //about when a key is pressed or released
-    public static int Continue = 0;
     private int transCell = 0; //When the game ends using this propert board will be covered with a transparent layer
 
     public void initGame() {
@@ -103,30 +74,29 @@ public class Game extends JPanel implements Runnable {
     }
 
     private void cycle() {
-        //Any updates
-        if (!GAMEOVER) {
-            if( GameMode == Constants.GAME_MODE_STANDARD ) {
-                board.CheckGameOver(matchstone);
-                if (System.currentTimeMillis() - lastDraw >= Constants.speed) {
-                    if (board.Check(matchstone)) {
-                        board.Update(matchstone);
-                        //matchstone = null;
-                        matchstone = new MatchStone();
-                        //Key = false;
-                        board.CheckIsFull();
-                    } else {
-                        matchstone.CellY++;
-                    }
-                    lastDraw = System.currentTimeMillis();
-                }
-            } else if( GameMode == Constants.GAME_MODE_SPLASH) {
-                if (++flashing == 10) {
-                    GameMode = Constants.GAME_MODE_STANDARD;
-                    board.setFlashing(false);
-                    board.handleFalling();
+        if ( GAMEOVER ) {
+            return;
+        }
+
+        if( GameMode == Constants.GAME_MODE_STANDARD ) {
+            board.CheckGameOver(matchstone);
+            if (System.currentTimeMillis() - lastDraw >= Constants.speed) {
+                if (board.Check(matchstone)) {
+                    board.Update(matchstone);
+                    matchstone = new MatchStone();
+                    board.CheckIsFull();
                 } else {
-                    board.setFlashing( flashing % 2 == 0);
+                    matchstone.CellY++;
                 }
+                lastDraw = System.currentTimeMillis();
+            }
+        } else if( GameMode == Constants.GAME_MODE_SPLASH) {
+            if (++flashing == 10) {
+                GameMode = Constants.GAME_MODE_STANDARD;
+                board.setFlashing(false);
+                board.handleFalling();
+            } else {
+                board.setFlashing( flashing % 2 == 0);
             }
         }
     }
@@ -170,8 +140,8 @@ public class Game extends JPanel implements Runnable {
         store = new Store();
         HighScores = new int[10];
         lastDraw = System.currentTimeMillis();
-        timePressed = System.currentTimeMillis();
         store.loadScores();
+        log_info();
     }
 
     private class KeyAction extends AbstractAction {
@@ -189,49 +159,48 @@ public class Game extends JPanel implements Runnable {
             } else {
                 activeGameActions(keyCode);
             }
+        log_info();
         }
     } //TAdapter
 
     private void activeGameActions(String keyCode) {
         if( GameMode == Constants.GAME_MODE_STANDARD) {
-            switch (keyCode) {
-                case Constants.KEY_LEFT_ARROW:
-                    board.move(-1, matchstone);
-                    break;
-                case Constants.KEY_RIGHT_ARROW:
-                    board.move(1, matchstone);
-                    break;
-                case Constants.KEY_DOWN_ARROW:
-                    board.move(0, matchstone);
-                    break;
-                case Constants.KEY_UP_ARROW:
-                    matchstone.Rotate();
-                    break;
-                case Constants.KEY_SOFTKEY1:
-                case Constants.KEY_SOFTKEY2:
-                    //Stop
-                    //SaveGame();
-                    GameMode = Constants.GAME_MODE_MENU;
-                    Continue = 1;
-                    break;
-                default:
-                    Key = true;
-                    KeyMove = 0;
-                    break;
-            }
+            this.handleGameEvents(keyCode);
         } else if (GameMode == Constants.GAME_MODE_SPLASH) {
             //Game is going on but flashing cause of Letting it down!
             //Need to implement this againg UBASAK
-        } else if (GameMode == Constants.GAME_MODE_MENU || GameMode == Constants.GAME_MODE_EXIT) {
+        } else if (GameMode == Constants.GAME_MODE_MENU || GameMode == Constants.GAME_MODE_EXIT || GameMode == Constants.GAME_MODE_CONTINUE) {
             this.handleMenuEvents(keyCode);
+        }
+    }
+
+    private void handleGameEvents(String keyCode) {
+        switch (keyCode) {
+            case Constants.KEY_LEFT_ARROW:
+                board.move(-1, matchstone);
+                break;
+            case Constants.KEY_RIGHT_ARROW:
+                board.move(1, matchstone);
+                break;
+            case Constants.KEY_DOWN_ARROW:
+                board.move(0, matchstone);
+                break;
+            case Constants.KEY_UP_ARROW:
+                matchstone.Rotate();
+                break;
+            case Constants.KEY_SOFTKEY1:
+            case Constants.KEY_SOFTKEY2:
+                //Stop
+                //SaveGame();
+                GameMode = Constants.GAME_MODE_CONTINUE;
+                break;
         }
     }
 
     private void passiveGameActions(String keyCode) {
         if( GameMode == Constants.GAME_MODE_STANDARD) {
-            //g.drawString("GAME OVER",0,60);
-            Logger.debug("Case 0");
             if (Constants.KEY_SOFTKEY1 == keyCode) {
+                //g.drawString("GAME OVER",0,60);
                 Logger.debug("Game Over");
                 GameMode = Constants.GAME_MODE_MENU;
             }
@@ -251,7 +220,7 @@ public class Game extends JPanel implements Runnable {
             */
         } else if( GameMode == Constants.GAME_MODE_SPLASH) {
             GameMode = Constants.GAME_MODE_MENU;
-        } else if (GameMode == Constants.GAME_MODE_MENU) {
+        } else if (GameMode == Constants.GAME_MODE_MENU || GameMode == Constants.GAME_MODE_CONTINUE) {
             this.handleMenuEvents(keyCode);
         }
     }
@@ -281,25 +250,20 @@ public class Game extends JPanel implements Runnable {
             Logger.debug("Loaded");
             GAMEOVER = false;
             GameMode = Constants.GAME_MODE_STANDARD;
-            Continue = 0;
         } else if (menuValue == 2) { //FINISH
             this.GameMode = Constants.GAME_MODE_MENU;
             this.GAMEOVER = true;
-            this.Continue = 0;
         } else if (menuValue == 3) { //HELP
             board.Score();
             GAMEOVER = true;
             this.GameMode = Constants.GAME_MODE_MENU;
-            //Continue=0;
         } else if (menuValue == 4) { //ABOUT
 
         } else if (menuValue == 5) { //EXIT
             if( GAMEOVER ) {
                 System.exit(0);
             } else {
-                //we are exiting but there are some flows, check this. UBASAK
                 GameMode = Constants.GAME_MODE_EXIT;
-                //menu.menuPosition = 0;
             }
         } else if(menuValue == 6) { //LEVE
 
@@ -308,6 +272,7 @@ public class Game extends JPanel implements Runnable {
         } else if(menuValue == 8) { //NO
             GameMode = Constants.GAME_MODE_STANDARD;
         }
+        log_info();
     }
 
     private void paintGame(Graphics g) {
@@ -319,11 +284,11 @@ public class Game extends JPanel implements Runnable {
     }
 
     private void drawMenu(Graphics g) {
-        if( GameMode == Constants.GAME_MODE_MENU || GameMode == Constants.GAME_MODE_EXIT) {
-            int mode = GameMode - 1;
-            if( Continue == 0 ) mode--;
-            menu.draw(g, mode);
+        int mode = GameMode - 2;
+        if( mode < 0 ) {
+            return;
         }
+        menu.draw(g, mode);
     }
 
     private void paintBoard(Graphics g) {
@@ -334,7 +299,7 @@ public class Game extends JPanel implements Runnable {
 
     private void drawSplash(Graphics g) {
         if( GameMode != Constants.GAME_MODE_MENU  ) return;
-        g.drawImage(images.splash,0,0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT,null);
+        g.drawImage(images.splash, 0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT, null);
     }
 
     private void NewGame() {
@@ -347,7 +312,11 @@ public class Game extends JPanel implements Runnable {
         if (matchstone.CellY != 0) {
             Logger.warn("WARNING : cell_y is not ZERO");
         }
-        //matchstone.CellY = 0;
         transCell = 0;
+        log_info();
+    }
+
+    private void log_info() {
+        Logger.debug(String.format("GameOver : %s\tGameMode : %s", GAMEOVER, GameMode));
     }
 }

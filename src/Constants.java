@@ -46,7 +46,8 @@ public class Constants {
     public static final int GAME_MODE_STANDARD = 0;
     public static final int GAME_MODE_SPLASH = 1;
     public static final int GAME_MODE_MENU = 2;
-    public static final int GAME_MODE_EXIT = 3;
+    public static final int GAME_MODE_CONTINUE = 3;
+    public static final int GAME_MODE_EXIT = 4;
 
     public static final int OFF   = 0;
     public static final int FATAL = 100;
