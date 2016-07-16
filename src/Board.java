@@ -207,16 +207,22 @@ public class Board {
                     for (int u = 0; u < matches; u++) {
                         this.TBTest[i][j - u] = false;
                     }
-                    Game.puan += ((Game.Level - 4) * (Game.Level - 4)) * matches;
+                    this.updateScore(matches);
                 }
             }
         }
     }
 
+    private void updateScore(int matches) {
+        Game.puan += ((Game.Level - 4) * (Game.Level - 4)) * matches;
+    }
+
     public boolean Check(MatchStone matchstone) {
-        if (matchstone.CellY + Constants.BALL_LENGTH == 20 || this.isFilled(matchstone, 0, Constants.BALL_LENGTH))
+        if (matchstone.CellY + Constants.BALL_LENGTH == 20 || this.isFilled(matchstone, 0, Constants.BALL_LENGTH)) {
             return true;
-        return false;
+        } else {
+            return false;
+        }
     }
 
     public void Update(MatchStone matchstone) {
@@ -342,7 +348,7 @@ public class Board {
     }
 
     public void move(int direction, MatchStone matchstone) {
-        if (Game.GameMode == Constants.GAME_MODE_STANDARD && Game.GAMEOVER == true) {
+        if (Game.GAMEOVER && Game.GameMode == Constants.GAME_MODE_STANDARD) {
             Logger.error("The error is at this point. What error?");
         }
 
@@ -372,12 +378,7 @@ public class Board {
             if (increase) matchstone.CellX--;
         } else if (direction == 0) {
             if (this.Check(matchstone)) {
-                //Update();
-                //matchstone = new MatchStone();
-                //CheckIsFull();
-                if (!Game.GAMEOVER) {
-                    this.CheckGameOver(matchstone);
-                }
+                this.CheckGameOver(matchstone);
             } else {
                 matchstone.CellY++;
             }

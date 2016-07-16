@@ -16,7 +16,7 @@ public class Game extends JPanel implements Runnable {
     private Menu menu = null;
     private Store store = null;
     private Images images = null;
-    public MatchStone matchstone = null;
+    private MatchStone matchstone = null;
     private int[] HighScores;
 
     //Game state properties --needs heavy refactoring. UBASAK
@@ -28,14 +28,6 @@ public class Game extends JPanel implements Runnable {
     public static int Level = 6;
     public static int puan = 0;
     private int transCell = 0; //When the game ends using this propert board will be covered with a transparent layer
-
-    public void initGame() {
-        Logger.debug("Game::InitGame");
-        setKeyBindings();
-        setBackground(Color.BLACK);
-        setPreferredSize(new Dimension(Constants.B_WIDTH, Constants.B_HEIGHT));
-        setDoubleBuffered(true);
-    }
 
     private void setKeyBindings() {
         ActionMap actionMap = getActionMap();
@@ -132,15 +124,35 @@ public class Game extends JPanel implements Runnable {
     }
 
     public Game() {
-        initGame();
+        this.initGame();
+        this.newGame();
+    }
+
+    public void initGame() {
+        Logger.debug("Game::InitGame");
+        setKeyBindings();
+        setBackground(Color.BLACK);
+        setPreferredSize(new Dimension(Constants.B_WIDTH, Constants.B_HEIGHT));
+        setDoubleBuffered(true);
         font = new Font("TimesRoman", Font.PLAIN, 20);
         images = new Images();
-        board = new Board(images);
         menu = new Menu();
         store = new Store();
         HighScores = new int[10];
-        lastDraw = System.currentTimeMillis();
         store.loadScores();
+    }
+
+    private void newGame() {
+        GAMEOVER = false;
+        GameMode = Constants.GAME_MODE_STANDARD;
+        board = new Board(images);
+        lastDraw = System.currentTimeMillis();
+        puan = 0;
+        matchstone = new MatchStone();
+        if (matchstone.CellY != 0) {
+            Logger.warn("WARNING : cell_y is not ZERO");
+        }
+        transCell = 0;
         log_info();
     }
 
@@ -244,7 +256,7 @@ public class Game extends JPanel implements Runnable {
         int menuValue = menu.getCommand();
         if (menuValue == 0) { //NEW ONE
             Logger.debug("Starts");
-            NewGame();
+            this.newGame();
         } else if (menuValue == 1) { //CONTINUE
             store.SaveLoad(false);
             Logger.debug("Loaded");
@@ -300,20 +312,6 @@ public class Game extends JPanel implements Runnable {
     private void drawSplash(Graphics g) {
         if( GameMode != Constants.GAME_MODE_MENU  ) return;
         g.drawImage(images.splash, 0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT, null);
-    }
-
-    private void NewGame() {
-        GAMEOVER = false;
-        GameMode = Constants.GAME_MODE_STANDARD;
-        board = new Board(images);
-        lastDraw = System.currentTimeMillis();
-        puan = 0;
-        matchstone = new MatchStone();
-        if (matchstone.CellY != 0) {
-            Logger.warn("WARNING : cell_y is not ZERO");
-        }
-        transCell = 0;
-        log_info();
     }
 
     private void log_info() {
