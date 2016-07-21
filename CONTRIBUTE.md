@@ -3,7 +3,7 @@
 
 ## I found a bug. How to report it?
 
-If you notice a bug the easiest way is to [look through the existing issues and tassk](https://github.com/ugurbasak/matchtris/issues) on the project's GitHub pages. If the bug is not there please report it.
+If you notice a bug the easiest way is to [look through the existing issues and task](https://github.com/ugurbasak/matchtris/issues) on the project's GitHub pages. If the bug is not there please report it.
 
 
 ## In which ways can I contribute?
@@ -21,7 +21,7 @@ Just follow the current patterns.
 
 ### Running and modifying the code
 
-Build your own version from source by reading [BUILDING.md](https://github.com/ugurbasak/matchtris/BUILDING.md).
+Build your own version from source by reading [BUILDING.md](./BUILDING.md).
 
 
 
