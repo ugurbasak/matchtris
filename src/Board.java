@@ -33,6 +33,7 @@ public class Board {
         this.drawCells(g);
         this.drawBorder(g);
         this.drawScore(g);
+        this.drawTransparentLayer(g);
     }
 
     private void drawBackground(Graphics g) {
@@ -387,5 +388,32 @@ public class Board {
 
     public void setFlashing(boolean isFlashingEnabled) {
         this.isFlashingEnabled = isFlashingEnabled;
+    }
+
+    private int transCell = 0; //When the game ends using this propert board will be covered with a transparent layer
+    public void drawTransparentLayer(Graphics g) {
+        if( !Game.GAMEOVER ) {
+            return;
+        }
+
+        if(Game.GameMode != Constants.GAME_MODE_STANDARD) {
+            return;
+        }
+
+        if( transCell + 1 < Constants.CELL_SIZE * 20 ) {
+            transCell+=Constants.CELL_SIZE;
+        }
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+        g2d.setColor(Color.black);
+        g2d.fillRect(Constants.startX, 0, Constants.CELL_SIZE * 10, Constants.startY + transCell);
+        Logger.debug("TransCell " + transCell);
+
+        if(transCell >= Constants.CELL_SIZE * 20 ) {
+            Logger.debug("Game is really over");//Do really something
+            g.setColor(Color.black);
+            g.drawString("Game Over please click press key to continue", 2 * Constants.CELL_SIZE, 4 * Constants.CELL_SIZE);
+        }
     }
 }

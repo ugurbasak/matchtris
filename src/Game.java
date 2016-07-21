@@ -27,7 +27,6 @@ public class Game extends JPanel implements Runnable {
     public static boolean GAMEOVER = true;
     public static int Level = 6;
     public static int puan = 0;
-    private int transCell = 0; //When the game ends using this propert board will be covered with a transparent layer
 
     private void setKeyBindings() {
         ActionMap actionMap = getActionMap();
@@ -126,6 +125,7 @@ public class Game extends JPanel implements Runnable {
     public Game() {
         this.initGame();
         this.newGame();
+        this.GameMode = Constants.GAME_MODE_MENU;
     }
 
     public void initGame() {
@@ -152,7 +152,7 @@ public class Game extends JPanel implements Runnable {
         if (matchstone.CellY != 0) {
             Logger.warn("WARNING : cell_y is not ZERO");
         }
-        transCell = 0;
+        //transCell = 0;
         log_info();
     }
 
@@ -212,24 +212,9 @@ public class Game extends JPanel implements Runnable {
     private void passiveGameActions(String keyCode) {
         if( GameMode == Constants.GAME_MODE_STANDARD) {
             if (Constants.KEY_SOFTKEY1 == keyCode) {
-                //g.drawString("GAME OVER",0,60);
-                Logger.debug("Game Over");
+                Logger.debug("Game Over - Starting again");
                 GameMode = Constants.GAME_MODE_MENU;
             }
-            //GameOver now it is time to draw the transparant part UBASAK
-            /* This code looks like old or new keypress code 
-            drawAll(g);
-            int xy[][] ={ {startX,startX+6*10,startX+6*10,startX},
-                          {128-startY-transCell*6,128-startY-transCell*6,128-startY,128-startY} };
-            dg.fillPolygon(xy[0],0,xy[1],0,4,0x88888888);
-            //g.drawString("GAME OVER",0,60);
-            if(transCell!=20)
-                transCell++;
-            else{
-                g.setColor(0x000000);
-                g.drawString("GAME OVER",0,60);
-            }
-            */
         } else if( GameMode == Constants.GAME_MODE_SPLASH) {
             GameMode = Constants.GAME_MODE_MENU;
         } else if (GameMode == Constants.GAME_MODE_MENU || GameMode == Constants.GAME_MODE_CONTINUE) {
