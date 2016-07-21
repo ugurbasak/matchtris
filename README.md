@@ -9,6 +9,5 @@ At first I merged using the gits diff tools, then one month later I try to do a 
 
 If you want to participate just clone it and start contributing.
 
-#Building
-* javac MatchTris.java
-* java MatchTris
+- Build your own version from source by reading [BUILDING.md](./BUILDING.md).
+- Contribute to the project by reading [CONTRIBUTE.md](./CONTRIBUTE.md).
