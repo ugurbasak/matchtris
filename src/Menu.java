@@ -23,7 +23,15 @@ public class Menu {
         this.menuPosition = 0;
     }
 
-    public void draw(Graphics g, int mode) {
+    public void draw(Graphics g) {
+        int mode = Game.GameMode - 2;
+        if( mode < 0 ) {
+            return;
+        }
+        this.draw(g, mode);
+    }
+
+    private void draw(Graphics g, int mode) {
         this.setMode(mode);
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         int x = Constants.BOARD_WIDTH  / 2 - 50;

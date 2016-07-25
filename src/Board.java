@@ -14,9 +14,13 @@ public class Board {
     private boolean[][] TBTest;
     private boolean isFlashingEnabled = false;
     private Images images = null;
+    private int transCell = 0; //When the game ends using this propert board will be covered with a transparent layer
+
     public Board(Images images) {
         //Initialization
         this.images = images;
+        this.transCell = 0;
+        this.isFlashingEnabled = false;
         TetrisBoard = new int[10][20];
         TBTest = new boolean[10][20];
 
@@ -56,9 +60,9 @@ public class Board {
 
     private BufferedImage getCellImage(int i, int j) {
         if (this.isFilled(i, j) && isValidCellForRendering(i, j) ) {
-            return images.getSprite(images.balls, this.getValue(i, j));
+            return images.getSprite(images.get("balls"), this.getValue(i, j));
         } else {
-            return images.back;
+            return images.get("back");
         }
     }
 
@@ -77,12 +81,12 @@ public class Board {
     private void drawBorder(Graphics g) {
         g.setClip(0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT);
         for (int i = 0; i < Constants.BOARD_WIDTH / 4; i++) {
-            g.drawImage(images.border, Constants.BOARD_WIDTH / 2, i * 4, null);
-            g.drawImage(images.border, 0, i * 4, null);
+            g.drawImage(images.get("border"), Constants.BOARD_WIDTH / 2, i * 4, null);
+            g.drawImage(images.get("border"), 0, i * 4, null);
         }
         for (int i = 0; i < Constants.BOARD_WIDTH / 8; i++) {
-            g.drawImage(images.border, i * 4, Constants.BOARD_WIDTH - 4 , null);
-            g.drawImage(images.border, i * 4, 0, null);
+            g.drawImage(images.get("border"), i * 4, Constants.BOARD_WIDTH - 4 , null);
+            g.drawImage(images.get("border"), i * 4, 0, null);
         }
     }
 
@@ -119,13 +123,14 @@ public class Board {
     private void check() {
         for (int i = 0; i < 10; i++) {
             for (int j = 20 - 1; j >= 0; j--) {
-                if (this.isFilled(i, j)) {
-                    int color = this.getValue(i, j);
-                    this.checkToUp(i, j, color);
-                    this.checkToRight(i, j, color);
-                    this.checkToRightHorizontal(i, j, color);
-                    this.checkToLeftHorizontal(i, j, color);
+                if (!this.isFilled(i, j)) {
+                    continue;
                 }
+                int color = this.getValue(i, j);
+                this.checkToUp(i, j, color);
+                this.checkToRight(i, j, color);
+                this.checkToRightHorizontal(i, j, color);
+                this.checkToLeftHorizontal(i, j, color);
             }
         }
     }
@@ -189,28 +194,43 @@ public class Board {
     private void LetItDown() {
         for (int i = 0; i < 10; i++) {
             for (int j = 20 - 1; j >= 0; j--) {
-                if ( this.TBTest[i][j] ) {
-                    int matches = 1;
-                    while (j - matches >= 0 && this.TBTest[i][j] == this.TBTest[i][j - matches] ) {
-                        matches++;
-                    }
-                    int m = 0;
-                    while (j - m >= 0) {
-                        if ((j - m - matches) < 0)
-                            TetrisBoard[i][j - m] = 0;
-                        else
-                            TetrisBoard[i][j - m] = this.getValue(i, j, 0, -1 * (matches + m));
-                        if (j - m - 1 >= 0 && ( !this.isFilled(i, j, 0, -1 * (m + 1) ) || (j - m) == 0) ) {
-                            break;
-                        }
-                        m++;
-                    }
-                    for (int u = 0; u < matches; u++) {
-                        this.TBTest[i][j - u] = false;
-                    }
-                    this.updateScore(matches);
+                if ( !this.TBTest[i][j] ) {
+                    continue;
                 }
+                int matches = this.getMatchesCount(i, j);
+                this.letItDown(i, j, matches);
+                this.clearChecks(i, j, matches);
+                this.updateScore(matches);
             }
+        }
+    }
+
+    private int getMatchesCount(int i, int j) {
+        int matches = 1;
+        while (j - matches >= 0 && this.TBTest[i][j] == this.TBTest[i][j - matches] ) {
+            matches++;
+        }
+        return matches;
+    }
+
+    private void letItDown(int i, int j, int matches) {
+        int m = 0;
+        while (j - m >= 0) {
+            int value = 0;
+            if ((j - m - matches) >= 0) {
+                value = this.getValue(i, j, 0, -1 * (matches + m));
+            }
+            TetrisBoard[i][j - m] = value;
+            if (j - m - 1 >= 0 && ( !this.isFilled(i, j, 0, -1 * (m + 1) ) || (j - m) == 0) ) {
+                break;
+            }
+            m++;
+        }
+    }
+
+    private void clearChecks(int i, int j, int matches) {
+        for (int u = 0; u < matches; u++) {
+            this.TBTest[i][j - u] = false;
         }
     }
 
@@ -390,7 +410,6 @@ public class Board {
         this.isFlashingEnabled = isFlashingEnabled;
     }
 
-    private int transCell = 0; //When the game ends using this propert board will be covered with a transparent layer
     public void drawTransparentLayer(Graphics g) {
         if( !Game.GAMEOVER ) {
             return;

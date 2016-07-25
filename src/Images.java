@@ -4,16 +4,13 @@ import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Random;
+import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class Images {
 
-    public BufferedImage balls = null;
-    public BufferedImage border = null;
-    public BufferedImage back = null;
-    public BufferedImage splash = null;
+    public Map<String, BufferedImage> map = new HashMap<String, BufferedImage>();
 
     public Images() {
         this.init();
@@ -24,16 +21,30 @@ public class Images {
         return image.getSubimage((index-1)*image_size,0,image_size, image_size);
     }
 
+    private void put(String key, BufferedImage image) {
+        if( image == null ) return;
+
+        this.map.put(key, image);
+    }
+
+    public BufferedImage get(String key) {
+        return this.map.get(key);
+    }
+
     public void init() {
         Logger.debug("Initialization started");
-        if(this.back == null)
-            this.back = loadBackground(); //LoadImage("images/back.png");
-        if(this.balls == null)
-            this.balls = loadBalls(); //LoadImage("images/balls.png");
-        if(this.border == null)
-            this.border = LoadImage("images/border.png");
-        if(this.splash == null)
-            this.splash = LoadImage("images/splash.png");
+        if(this.get("back") == null) {
+            this.put("back", this.loadBackground());
+        }
+        if(this.get("balls") == null) {
+            this.put("balls", loadBalls());
+        }
+        if(this.get("border") == null) {
+            this.put("border", LoadImage("images/border.png"));
+        }
+        if(this.get("splash") == null) {
+            this.put("splash", LoadImage("images/splash.png"));
+        }
     }
 
     private BufferedImage loadBalls() {

@@ -152,7 +152,6 @@ public class Game extends JPanel implements Runnable {
         if (matchstone.CellY != 0) {
             Logger.warn("WARNING : cell_y is not ZERO");
         }
-        //transCell = 0;
         log_info();
     }
 
@@ -277,26 +276,18 @@ public class Game extends JPanel implements Runnable {
         board.drawAll(g);
         paintBoard(g);
         drawSplash(g);
-        drawMenu(g);
-    }
-
-    private void drawMenu(Graphics g) {
-        int mode = GameMode - 2;
-        if( mode < 0 ) {
-            return;
-        }
-        menu.draw(g, mode);
+        menu.draw(g);
     }
 
     private void paintBoard(Graphics g) {
         if( !GAMEOVER && matchstone != null ) {
-            matchstone.DrawShape(g, images.balls, Constants.CELL_SIZE);
+            matchstone.DrawShape(g, images.get("balls"), Constants.CELL_SIZE);
         }
     }
 
     private void drawSplash(Graphics g) {
         if( GameMode != Constants.GAME_MODE_MENU  ) return;
-        g.drawImage(images.splash, 0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT, null);
+        g.drawImage(images.get("splash"), 0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT, null);
     }
 
     private void log_info() {
