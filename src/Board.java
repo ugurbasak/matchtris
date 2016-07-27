@@ -21,11 +21,11 @@ public class Board {
         this.images = images;
         this.transCell = 0;
         this.isFlashingEnabled = false;
-        TetrisBoard = new int[10][20];
-        TBTest = new boolean[10][20];
+        TetrisBoard = new int[Constants.BOARD_COLUMNS][Constants.BOARD_ROWS];
+        TBTest = new boolean[Constants.BOARD_COLUMNS][Constants.BOARD_ROWS];
 
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 20; j++) {
+        for (int i = 0; i < Constants.BOARD_COLUMNS; i++) {
+            for (int j = 0; j < Constants.BOARD_ROWS; j++) {
                 TetrisBoard[i][j] = 0;
                 TBTest[i][j] = false;
             }
@@ -48,8 +48,8 @@ public class Board {
      }
 
     private void drawCells(Graphics g) {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 20; j++) {
+        for (int i = 0; i < Constants.BOARD_COLUMNS; i++) {
+            for (int j = 0; j < Constants.BOARD_ROWS; j++) {
                 int x_v = Constants.startX + i * Constants.CELL_SIZE;
                 int y_v = Constants.startY + j * Constants.CELL_SIZE;
                 BufferedImage image = this.getCellImage(i, j);
@@ -121,8 +121,8 @@ public class Board {
     }
 
     private void check() {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 20 - 1; j >= 0; j--) {
+        for (int i = 0; i < Constants.BOARD_COLUMNS; i++) {
+            for (int j = Constants.BOARD_ROWS - 1; j >= 0; j--) {
                 if (!this.isFilled(i, j)) {
                     continue;
                 }
@@ -136,11 +136,11 @@ public class Board {
     }
 
     private boolean isInRange(int x, int y) {
-        if( x < 0 || x >=10) {
+        if( x < 0 || x >=Constants.BOARD_COLUMNS) {
             return false;
         }
 
-        if( y < 0 || y >=20) {
+        if( y < 0 || y >=Constants.BOARD_ROWS) {
             return false;
         }
 
@@ -192,8 +192,8 @@ public class Board {
     }
 
     private void LetItDown() {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 20 - 1; j >= 0; j--) {
+        for (int i = 0; i < Constants.BOARD_COLUMNS; i++) {
+            for (int j = Constants.BOARD_ROWS - 1; j >= 0; j--) {
                 if ( !this.TBTest[i][j] ) {
                     continue;
                 }
@@ -239,7 +239,7 @@ public class Board {
     }
 
     public boolean Check(MatchStone matchstone) {
-        if (matchstone.CellY + Constants.BALL_LENGTH == 20 || this.isFilled(matchstone, 0, Constants.BALL_LENGTH)) {
+        if (matchstone.CellY + Constants.BALL_LENGTH == Constants.BOARD_ROWS || this.isFilled(matchstone, 0, Constants.BALL_LENGTH)) {
             return true;
         } else {
             return false;
@@ -353,7 +353,7 @@ public class Board {
     }
 
     private boolean checkRight(MatchStone matchstone, int i) {
-        if (matchstone.CellX == (10 - 1) || this.isFilled(matchstone, 1, i) ) {
+        if (matchstone.CellX == (Constants.BOARD_COLUMNS - 1) || this.isFilled(matchstone, 1, i) ) {
             return true;
         } else {
             return false;
@@ -419,7 +419,7 @@ public class Board {
             return;
         }
 
-        if( transCell + 1 < Constants.CELL_SIZE * 20 ) {
+        if( transCell + 1 < Constants.CELL_SIZE * Constants.BOARD_ROWS ) {
             transCell+=Constants.CELL_SIZE;
         }
 
@@ -429,7 +429,7 @@ public class Board {
         g2d.fillRect(Constants.startX, 0, Constants.CELL_SIZE * 10, Constants.startY + transCell);
         Logger.debug("TransCell " + transCell);
 
-        if(transCell >= Constants.CELL_SIZE * 20 ) {
+        if(transCell >= Constants.CELL_SIZE * Constants.BOARD_ROWS ) {
             Logger.debug("Game is really over");//Do really something
             g.setColor(Color.black);
             g.drawString("Game Over please click press key to continue", 2 * Constants.CELL_SIZE, 4 * Constants.CELL_SIZE);
