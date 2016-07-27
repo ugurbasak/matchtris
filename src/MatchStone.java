@@ -13,11 +13,16 @@ public class MatchStone {
     public int[] type;
 
     public MatchStone() {
-        this.initCoordinates();
+        this.setNextCoordinates();
         this.initTypes();
     }
 
-    private void initCoordinates() {
+    private void setNextCoordinates() {
+        CellX = 12;
+        CellY = 5;
+    }
+
+    public void initCoordinates() {
         CellX = 4;
         CellY = -1 * Constants.BALL_LENGTH;//0;
     }

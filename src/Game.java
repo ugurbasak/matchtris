@@ -17,6 +17,7 @@ public class Game extends JPanel implements Runnable {
     private Store store = null;
     private Images images = null;
     private MatchStone matchstone = null;
+    private MatchStone nextStone = null;
     private int[] HighScores;
 
     //Game state properties --needs heavy refactoring. UBASAK
@@ -74,7 +75,9 @@ public class Game extends JPanel implements Runnable {
             if (System.currentTimeMillis() - lastDraw >= Constants.speed) {
                 if (board.Check(matchstone)) {
                     board.Update(matchstone);
-                    matchstone = new MatchStone();
+                    matchstone = nextStone;
+                    matchstone.initCoordinates();
+                    nextStone = new MatchStone();
                     board.CheckIsFull();
                 } else {
                     matchstone.CellY++;
@@ -149,6 +152,8 @@ public class Game extends JPanel implements Runnable {
         lastDraw = System.currentTimeMillis();
         puan = 0;
         matchstone = new MatchStone();
+        matchstone.initCoordinates();
+        nextStone = new MatchStone();
         if (matchstone.CellY != 0) {
             Logger.warn("WARNING : cell_y is not ZERO");
         }
@@ -282,6 +287,7 @@ public class Game extends JPanel implements Runnable {
     private void paintBoard(Graphics g) {
         if( !GAMEOVER && matchstone != null ) {
             matchstone.DrawShape(g, images.get("balls"), Constants.CELL_SIZE);
+            nextStone.DrawShape(g, images.get("balls"), Constants.CELL_SIZE);
         }
     }
 
