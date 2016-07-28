@@ -98,12 +98,12 @@ public class Store {
             if(Save){
                 SetRecord(rsMatchTris,216,matchstone.CellX);
                 SetRecord(rsMatchTris,217,matchstone.CellY);
-                SetRecord(rsMatchTris,218,puan);
+                SetRecord(rsMatchTris,218,points);
             }
             else{
                 matchstone.CellX = GetIntRecord(rsMatchTris,216);
                 matchstone.CellY = GetIntRecord(rsMatchTris,217);
-                puan = GetIntRecord(rsMatchTris,218);
+                points = GetIntRecord(rsMatchTris,218);
                 SetRecord(rsMatchTris,ISCONTINUE,0);
             }
             rsMatchTris.closeRecordStore();

@@ -32,7 +32,7 @@ public class Board {
         }
     }
 
-    public void drawAll(Graphics g) {
+    public void draw(Graphics g) {
         this.drawBackground(g);
         this.drawCells(g);
         this.drawBorder(g);
@@ -94,7 +94,7 @@ public class Board {
         g.setColor(Color.black);
         g.drawString("Points", (10 + 2) * Constants.CELL_SIZE, 50);
         g.setColor(Color.blue);
-        g.drawString(Integer.toString(Game.puan), (10 + 2) * Constants.CELL_SIZE, 70);
+        g.drawString(Integer.toString(Game.points), (10 + 2) * Constants.CELL_SIZE, 70);
     }
 
     public boolean CheckIsFull() {
@@ -235,7 +235,7 @@ public class Board {
     }
 
     private void updateScore(int matches) {
-        Game.puan += ((Game.Level - 4) * (Game.Level - 4)) * matches;
+        Game.points += ((Game.Level - 4) * (Game.Level - 4)) * matches;
     }
 
     public boolean Check(MatchStone matchstone) {
@@ -291,10 +291,10 @@ public class Board {
             /*
             int j = 0;
             for (j = 1; j < 10; j++) {
-                if (puan > HighScores[0]) {
+                if (points > HighScores[0]) {
                     j = 0;
                     break;
-                } else if (puan > HighScores[j]) break;
+                } else if (points > HighScores[j]) break;
             }
             System.out.println("my j =" + j);
             */
@@ -303,7 +303,7 @@ public class Board {
             if(j!=10){
                 for(int n=9; n>=j; n--){
                     if(n!=j)    HighScores[n] = HighScores[n-1];
-                    else        HighScores[j] = puan;
+                    else        HighScores[j] = points;
                 }
                 try {
                     rsMatchTris = RecordStore.openRecordStore("MatchTris",true);

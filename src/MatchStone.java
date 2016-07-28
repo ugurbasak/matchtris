@@ -4,7 +4,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-public class MatchStone {
+public class MatchStone extends Sprite {
 
     private final int BALL_IMAGE_SIZE = Constants.CELL_SIZE; //if you want to use and image use its size like 6 for current image
     
@@ -12,12 +12,13 @@ public class MatchStone {
     public int CellY;
     public int[] type;
 
-    public MatchStone() {
+    public MatchStone(BufferedImage sprite) {
+        super(sprite);
         this.setNextCoordinates();
         this.initTypes();
     }
 
-    private void setNextCoordinates() {
+    public void setNextCoordinates() {
         CellX = 12;
         CellY = 5;
     }
@@ -27,7 +28,7 @@ public class MatchStone {
         CellY = -1 * Constants.BALL_LENGTH;//0;
     }
 
-    private void initTypes() {
+    public void initTypes() {
         type = new int[Constants.BALL_LENGTH];
         for (int i = 0; i < Constants.BALL_LENGTH; i++) {
             type[i] = getRandomColor();
@@ -46,7 +47,10 @@ public class MatchStone {
         return image.getSubimage( (index-1) * BALL_IMAGE_SIZE, 0, BALL_IMAGE_SIZE, BALL_IMAGE_SIZE);
     }
 
-    public void DrawShape(Graphics g, BufferedImage image, int cell_size) {
+    public void draw(Graphics g) {
+        BufferedImage image = this.sprite;
+        int cell_size = Constants.CELL_SIZE;
+
         for (int i = 0; i < Constants.BALL_LENGTH; i++) {
             if (this.CellY + i >= 0) {
                 BufferedImage imagex = getSprite(image, this.type[i]);

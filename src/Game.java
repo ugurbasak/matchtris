@@ -27,7 +27,7 @@ public class Game extends JPanel implements Runnable {
     public static boolean falling = false;
     public static boolean GAMEOVER = true;
     public static int Level = 6;
-    public static int puan = 0;
+    public static int points = 0;
 
     private void setKeyBindings() {
         ActionMap actionMap = getActionMap();
@@ -71,27 +71,37 @@ public class Game extends JPanel implements Runnable {
         }
 
         if( GameMode == Constants.GAME_MODE_STANDARD ) {
-            board.CheckGameOver(matchstone);
-            if (System.currentTimeMillis() - lastDraw >= Constants.speed) {
-                if (board.Check(matchstone)) {
-                    board.Update(matchstone);
-                    matchstone = nextStone;
-                    matchstone.initCoordinates();
-                    nextStone = new MatchStone();
-                    board.CheckIsFull();
-                } else {
-                    matchstone.CellY++;
-                }
-                lastDraw = System.currentTimeMillis();
-            }
+            gameCycle();
         } else if( GameMode == Constants.GAME_MODE_SPLASH) {
-            if (++flashing == 10) {
-                GameMode = Constants.GAME_MODE_STANDARD;
-                board.setFlashing(false);
-                board.handleFalling();
-            } else {
-                board.setFlashing( flashing % 2 == 0);
-            }
+            splashCycle();
+        }
+    }
+
+    private void gameCycle() {
+        board.CheckGameOver(matchstone);
+
+        if (System.currentTimeMillis() - lastDraw < Constants.speed) {
+            return;
+        }
+
+        if (board.Check(matchstone)) {
+            board.Update(matchstone);
+            updateStones();
+            board.CheckIsFull();
+        } else {
+            matchstone.CellY++;
+        }
+
+        lastDraw = System.currentTimeMillis();
+    }
+
+    private void splashCycle() {
+        if (++flashing == 10) {
+            GameMode = Constants.GAME_MODE_STANDARD;
+            board.setFlashing(false);
+            board.handleFalling();
+        } else {
+            board.setFlashing( flashing % 2 == 0);
         }
     }
 
@@ -150,10 +160,10 @@ public class Game extends JPanel implements Runnable {
         GameMode = Constants.GAME_MODE_STANDARD;
         board = new Board(images);
         lastDraw = System.currentTimeMillis();
-        puan = 0;
-        matchstone = new MatchStone();
+        points = 0;
+        matchstone = new MatchStone(images.get("balls"));
+        nextStone = new MatchStone(images.get("balls"));
         matchstone.initCoordinates();
-        nextStone = new MatchStone();
         if (matchstone.CellY != 0) {
             Logger.warn("WARNING : cell_y is not ZERO");
         }
@@ -278,22 +288,36 @@ public class Game extends JPanel implements Runnable {
 
     private void paintGame(Graphics g) {
         g.setFont(font);
-        board.drawAll(g);
-        paintBoard(g);
+        board.draw(g);
+        paintStones(g);
         drawSplash(g);
         menu.draw(g);
     }
 
-    private void paintBoard(Graphics g) {
-        if( !GAMEOVER && matchstone != null ) {
-            matchstone.DrawShape(g, images.get("balls"), Constants.CELL_SIZE);
-            nextStone.DrawShape(g, images.get("balls"), Constants.CELL_SIZE);
+    private void paintStones(Graphics g) {
+        if( GAMEOVER || matchstone == null || nextStone == null ) {
+            return;
         }
+
+        matchstone.draw(g);
+        nextStone.draw(g);
     }
 
     private void drawSplash(Graphics g) {
         if( GameMode != Constants.GAME_MODE_MENU  ) return;
         g.drawImage(images.get("splash"), 0, 0, Constants.BOARD_WIDTH, Constants.BOARD_HEIGHT, null);
+    }
+
+    private void updateStones() {
+        if( matchstone == null || nextStone == null ) {
+            return;
+        }
+        MatchStone tempStone = matchstone;
+        matchstone = nextStone;
+        matchstone.initCoordinates();
+        nextStone = tempStone;
+        nextStone.initTypes();
+        nextStone.setNextCoordinates(); 
     }
 
     private void log_info() {
